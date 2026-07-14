@@ -21,8 +21,10 @@ export const SURFACE = "#0b1017";
 export const MAP_STYLE =
   "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
-// Vue satellite (Esri World Imagery, raster sans clé) — assombrie/désaturée pour
-// que les trails colorés restent lisibles par-dessus
+// Vue satellite — assombrie/désaturée pour que les trails colorés restent lisibles.
+// Deux couches empilées : Esri (monde, filet de sécurité) + ortho IGN 20 cm
+// au-dessus (France uniquement, plus nette et plus récente, WMTS sans clé).
+const DIM = { "raster-brightness-max": 0.72, "raster-saturation": -0.2 };
 export const SATELLITE_STYLE = {
   version: 8,
   sources: {
@@ -35,14 +37,21 @@ export const SATELLITE_STYLE = {
       maxzoom: 18,
       attribution: "© Esri, Maxar, Earthstar Geographics",
     },
+    ign: {
+      type: "raster",
+      tiles: [
+        "https://data.geopf.fr/wmts?SERVICE=WMTS&REQUEST=GetTile&VERSION=1.0.0" +
+          "&LAYER=ORTHOIMAGERY.ORTHOPHOTOS&STYLE=normal&TILEMATRIXSET=PM" +
+          "&TILEMATRIX={z}&TILEROW={y}&TILECOL={x}&FORMAT=image%2Fjpeg",
+      ],
+      tileSize: 256,
+      maxzoom: 21,
+      attribution: "© IGN",
+    },
   },
   layers: [
-    {
-      id: "esri-imagery",
-      type: "raster",
-      source: "esri",
-      paint: { "raster-brightness-max": 0.72, "raster-saturation": -0.2 },
-    },
+    { id: "esri-imagery", type: "raster", source: "esri", paint: DIM },
+    { id: "ign-ortho", type: "raster", source: "ign", paint: DIM },
   ],
 };
 
