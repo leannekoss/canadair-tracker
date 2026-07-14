@@ -6,7 +6,7 @@ import AircraftCard from "./components/AircraftCard.jsx";
 import NewsFeed from "./components/NewsFeed.jsx";
 import { useFleet } from "./lib/useFleet.js";
 import { positionAt, timeWindow } from "./lib/replay.js";
-import { fetchFires, namedFireClusters } from "./lib/fires.js";
+import { ACTIVE_AGE_HOURS, fetchFires, namedFireClusters } from "./lib/fires.js";
 import { analyzeMission } from "./lib/mission.js";
 import { FRANCE_VIEW } from "./theme.js";
 
@@ -103,7 +103,8 @@ export default function App() {
       fetchFires()
         .then(async (f) => {
           if (!alive) return;
-          setFires(f);
+          // braises sur la carte : détections récentes · foyers : fenêtre élargie
+          setFires(f.filter((x) => x.ageHours <= ACTIVE_AGE_HOURS));
           const clusters = await namedFireClusters(f);
           if (alive) setFoyers(clusters);
         })
@@ -256,7 +257,8 @@ export default function App() {
             </option>
             {foyers.map((f, i) => (
               <option key={i} value={i}>
-                {f.name} · {f.frp.toLocaleString("fr-FR")} MW · {f.count} pts
+                {f.active ? "🔥" : "🌫"} {f.name} · {f.frp.toLocaleString("fr-FR")} MW
+                {f.active ? "" : " · en extinction"}
               </option>
             ))}
           </select>
@@ -294,6 +296,24 @@ export default function App() {
         )}
         <NewsFeed />
       </div>
+
+      {/* Footer : sources & auteur */}
+      <footer className="absolute bottom-4 left-4 flex flex-col gap-0.5 text-[11px]">
+        <a
+          href="/methodo.html"
+          className="pointer-events-auto text-ink-faint transition-colors hover:text-ink"
+        >
+          Sources &amp; méthodologie
+        </a>
+        <a
+          href="https://www.linkedin.com/in/henricasalis/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="pointer-events-auto text-ink-faint transition-colors hover:text-ink"
+        >
+          par Henri Casalis
+        </a>
+      </footer>
 
       {/* Barre temporelle */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2">

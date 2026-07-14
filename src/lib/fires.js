@@ -7,7 +7,8 @@ const VIIRS_URL =
   "Satellite_VIIRS_Thermal_Hotspots_and_Fire_Activity/FeatureServer/0/query";
 
 const FRANCE_BBOX = "-5.5,41,10,51.5";
-const MAX_AGE_HOURS = 24;
+const MAX_AGE_HOURS = 72;        // fenêtre de requête (foyers récents « sous surveillance »)
+export const ACTIVE_AGE_HOURS = 24; // au-delà : plus de braise sur la carte, foyer « en extinction »
 
 // Regroupe les hotspots en foyers (grille ~0.15° ≈ 15 km), triés par puissance totale.
 export function clusterFires(fires, cell = 0.15, top = 8) {
@@ -24,17 +25,24 @@ export function clusterFires(fires, cell = 0.15, top = 8) {
     b.count += 1;
     b.minAge = Math.min(b.minAge, f.ageHours ?? 99);
   }
-  return [...buckets.values()]
-    .filter((b) => b.count >= 3) // ignore les détections isolées
-    .map((b) => ({
-      lat: b.latW / b.sumW,
-      lon: b.lonW / b.sumW,
-      frp: Math.round(b.frp),
-      count: b.count,
-      minAge: b.minAge,
-    }))
+  const all = [...buckets.values()].map((b) => ({
+    lat: b.latW / b.sumW,
+    lon: b.lonW / b.sumW,
+    frp: Math.round(b.frp),
+    count: b.count,
+    minAge: b.minAge,
+    active: b.minAge <= ACTIVE_AGE_HOURS, // sinon : « en extinction / sous surveillance »
+  }));
+  // beaucoup de petites détections (écobuages, industriel) : seuils pour rester lisible
+  const actives = all
+    .filter((c) => c.active && c.count >= 3)
     .sort((a, b) => b.frp - a.frp)
     .slice(0, top);
+  const fading = all
+    .filter((c) => !c.active && c.count >= 3 && c.frp >= 50)
+    .sort((a, b) => b.frp - a.frp)
+    .slice(0, 3);
+  return [...actives, ...fading];
 }
 
 // Nomme un foyer par sa commune (geo.api.gouv.fr, sans clé, CORS ouvert).

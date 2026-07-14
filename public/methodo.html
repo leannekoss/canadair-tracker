@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Méthodologie & sources — Canadair Tracker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --surface: #0b1017; --panel: #101824; --line: #223046;
+      --ink: #ede8dc; --dim: #94a1b5; --faint: #566379;
+      --pelican: #d63426; --fire: #ff5c33;
+    }
+    * { box-sizing: border-box; margin: 0; }
+    body {
+      background: var(--surface); color: var(--ink);
+      font-family: Barlow, sans-serif; line-height: 1.55;
+      padding: 3rem 1.5rem 4rem;
+    }
+    main { max-width: 44rem; margin: 0 auto; }
+    a { color: var(--dim); }
+    a:hover { color: var(--ink); }
+    h1 {
+      font-family: "Barlow Condensed", sans-serif; font-size: 2.2rem;
+      font-weight: 700; letter-spacing: 0.02em; line-height: 1.1;
+    }
+    h2 {
+      font-family: "Barlow Condensed", sans-serif; font-size: 1.05rem;
+      font-weight: 600; text-transform: uppercase; letter-spacing: 0.14em;
+      color: var(--dim); margin: 2.4rem 0 0.8rem;
+      border-bottom: 1px solid var(--line); padding-bottom: 0.4rem;
+    }
+    p, li { color: var(--ink); font-size: 0.98rem; }
+    ul { padding-left: 1.2rem; margin: 0.5rem 0; }
+    li { margin: 0.35rem 0; }
+    li::marker { color: var(--pelican); }
+    .muted { color: var(--dim); }
+    .warn {
+      border: 1px solid var(--line); background: var(--panel);
+      padding: 0.8rem 1rem; margin: 1rem 0; border-radius: 6px;
+      font-size: 0.95rem;
+    }
+    .warn strong { color: var(--fire); }
+    .back {
+      display: inline-block; margin-bottom: 2rem; text-decoration: none;
+      font-family: "Barlow Condensed", sans-serif; font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+    footer { margin-top: 3rem; padding-top: 1rem; border-top: 1px solid var(--line); font-size: 0.9rem; color: var(--faint); }
+  </style>
+</head>
+<body>
+  <main>
+    <a class="back" href="/">← Retour à la carte</a>
+    <h1>Méthodologie &amp; sources</h1>
+    <p class="muted" style="margin-top:.5rem">
+      Canadair Tracker suit en temps réel les bombardiers d'eau de la Sécurité Civile
+      française et les feux détectés par satellite. Projet personnel, non affilié à la
+      Sécurité Civile.
+    </p>
+
+    <h2>Flotte suivie</h2>
+    <ul>
+      <li><strong>12 Canadair CL-415</strong> « Pélican », la totalité de la flotte française (base de Nîmes-Garons)</li>
+      <li><strong>6 Dash 8 Q400MR</strong> « Milan » (avions à retardant)</li>
+      <li><strong>34 hélicoptères EC145</strong> « Dragon »</li>
+      <li>Renforts détectés automatiquement : Canadairs européens (rescEU) et Air Tractors survolant la France</li>
+    </ul>
+    <p>
+      Le registre a été constitué en balayant le bloc de transpondeurs des aéronefs
+      d'État français (hex <code>3B7Bxx</code>) via adsbdb.com, puis vérifié contre les
+      sources publiques (12 CL-415 confirmés).
+    </p>
+
+    <h2>Positions &amp; trajectoires</h2>
+    <ul>
+      <li><strong>Positions live</strong> : réseau communautaire ADS-B
+        <a href="https://airplanes.live" rel="noopener">airplanes.live</a>, rafraîchies toutes les 12 s</li>
+      <li><strong>Trajectoires</strong> : traces tar1090 (fenêtre glissante 24 h), archivées chaque soir à 21 h 45 UTC pour le replay des journées passées</li>
+    </ul>
+    <div class="warn">
+      <strong>Limite</strong> : la couverture ADS-B dépend de récepteurs bénévoles au sol.
+      Les Canadairs volant très bas (écopage, largage) passent régulièrement sous
+      l'horizon radio : des segments de vol peuvent manquer, surtout hors des zones densément couvertes.
+    </div>
+
+    <h2>Feux &amp; foyers</h2>
+    <ul>
+      <li><strong>Détections thermiques</strong> : satellites VIIRS (NASA FIRMS), servies par
+        l'ArcGIS Living Atlas, sans clé. Un point = un pixel chaud ~375 m, pas un périmètre officiel.</li>
+      <li><strong>Foyers</strong> : regroupement des détections par cellules d'environ 15 km,
+        nommés par leur commune (geo.api.gouv.fr), triés par puissance radiative (FRP, en MW).
+        Foyer « actif » = détection &lt; 24 h · « en extinction » = détection entre 24 h et 72 h.</li>
+    </ul>
+    <div class="warn">
+      <strong>Limite</strong> : VIIRS ne repasse que quelques fois par jour. Un feu maîtrisé
+      (plus d'émission thermique) disparaît de la carte même si les secours restent engagés ;
+      inversement, brûlages agricoles ou torchères industrielles peuvent apparaître.
+    </div>
+
+    <h2>Statistiques de mission (estimations)</h2>
+    <p>Calculées à partir des seules traces ADS-B, <strong>sans aucune donnée opérationnelle officielle</strong> :</p>
+    <ul>
+      <li><strong>Passage sur foyer</strong> : entrée de la trace dans un rayon de 6 km autour d'un foyer ; « largage probable » si le passage descend sous 1 500 ft</li>
+      <li><strong>Écopage</strong> : séquence courte (&lt; 90 s) au ras de l'eau (≤ 200 ft) entre 55 et 130 kt, suivie d'une remontée, regroupées par plan d'eau</li>
+      <li><strong>Posé intermédiaire</strong> : arrêt au sol &gt; 3 min hors base (recharge en retardant des Dash sur pélicandromes)</li>
+    </ul>
+
+    <h2>Fonds de carte &amp; médias</h2>
+    <ul>
+      <li>Plan : © <a href="https://carto.com/attributions" rel="noopener">CARTO</a> ·
+        © <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a> contributors</li>
+      <li>Satellite : orthophotos © <a href="https://geoservices.ign.fr/" rel="noopener">IGN</a> (France, 20 cm) ·
+        © Esri, Maxar, Earthstar Geographics (monde)</li>
+      <li>Photos d'appareils : © photographes via
+        <a href="https://www.planespotters.net" rel="noopener">planespotters.net</a></li>
+      <li>Actualités : Google News (presse française)</li>
+    </ul>
+
+    <footer>
+      Projet personnel de <a href="https://www.linkedin.com/in/henricasalis/" rel="noopener">Henri Casalis</a> ·
+      données publiques et communautaires · aucune garantie d'exactitude ou d'exhaustivité.
+      En cas d'urgence, fiez-vous uniquement aux canaux officiels (préfectures, Sécurité Civile).
+    </footer>
+  </main>
+</body>
+</html>

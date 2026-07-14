@@ -7,7 +7,7 @@ import fleetData from "../../data/fleet.json";
 import {
   fetchArchivedTrace,
   fetchArchiveIndex,
-  fetchLiveAirTractors,
+  fetchLiveEuroBombers,
   fetchLiveMil,
   fetchTodayTrace,
   sleep,
@@ -108,7 +108,7 @@ export function useFleet() {
         );
         let extras = [];
         if (tick % AT8T_EVERY_N_TICKS === 0) {
-          extras = await fetchLiveAirTractors();
+          extras = await fetchLiveEuroBombers();
         }
         tick++;
         if (stopped) return;

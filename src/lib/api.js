@@ -39,10 +39,12 @@ export async function fetchLiveMil() {
   return (data.ac ?? []).map(normalizeLive);
 }
 
-// Air Tractors AT-802 en vol au-dessus de la France (bombardiers loués, immat étrangères)
-export async function fetchLiveAirTractors() {
-  const res = await fetch(`${LIVE_BASE}/v2/type/AT8T`);
-  if (!res.ok) throw new Error(`live AT8T: HTTP ${res.status}`);
+// Bombardiers d'eau non français au-dessus de la France : Canadairs de renfort
+// européen (rescEU : I-, SX-, EC-…) et Air Tractors loués. Les types amphibies
+// CL2T/CL4T et AT8T ne sont jamais des liners → le filtre bbox suffit.
+export async function fetchLiveEuroBombers() {
+  const res = await fetch(`${LIVE_BASE}/v2/type/CL4T,CL2T,AT8T`);
+  if (!res.ok) throw new Error(`live bombers: HTTP ${res.status}`);
   const data = await res.json();
   return (data.ac ?? [])
     .filter((ac) => ac.lat != null && inFrance(ac))
