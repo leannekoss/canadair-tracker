@@ -10,18 +10,24 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     proxy: {
-      // Traces tar1090 (exige le header Referer, sinon 403)
+      // Traces tar1090 (exige le header Referer, sinon 403) — /api/traces?hex=xxxxxx
       '/api/traces': {
         target: 'https://globe.airplanes.live',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/traces/, '/data/traces'),
+        rewrite: (path) => {
+          const hex = new URL(path, 'http://x').searchParams.get('hex') ?? '';
+          return `/data/traces/${hex.slice(-2)}/trace_full_${hex}.json`;
+        },
         headers: { Referer: 'https://globe.airplanes.live/' },
       },
-      // Photos planespotters (exige un User-Agent avec contact)
+      // Photos planespotters (exige un User-Agent avec contact) — /api/photos?hex=xxxxxx
       '/api/photos': {
         target: 'https://api.planespotters.net',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/photos/, '/pub/photos'),
+        rewrite: (path) => {
+          const hex = new URL(path, 'http://x').searchParams.get('hex') ?? '';
+          return `/pub/photos/hex/${hex}`;
+        },
         headers: { 'User-Agent': 'CanadairTracker/1.0 (+mailto:hcasalis@gmail.com)' },
       },
       // API live airplanes.live (v2/mil, v2/type, ...)

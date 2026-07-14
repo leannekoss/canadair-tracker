@@ -14,7 +14,7 @@ function usePhoto(hex) {
       return;
     }
     let alive = true;
-    fetch(`/api/photos/hex/${hex}`)
+    fetch(`/api/photos?hex=${hex}`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         const p = d?.photos?.[0] ?? null;

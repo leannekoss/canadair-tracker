@@ -1,16 +1,13 @@
 // Proxy serverless pour les photos planespotters : l'API exige un User-Agent
 // avec contact, header qu'un fetch navigateur ne peut pas définir.
-// Chemin attendu : /api/photos/hex/{hex}
-
-const PATH_RE = /^hex\/[0-9a-f]{6}$/;
+// Usage : /api/photos?hex=3b7b6f
 
 export default async function handler(req, res) {
-  const parts = req.query.path ?? [];
-  const path = Array.isArray(parts) ? parts.join("/") : parts;
-  if (!PATH_RE.test(path)) {
-    return res.status(400).json({ error: "chemin photo invalide" });
+  const hex = String(req.query.hex ?? "").toLowerCase();
+  if (!/^[0-9a-f]{6}$/.test(hex)) {
+    return res.status(400).json({ error: "paramètre hex invalide" });
   }
-  const upstream = await fetch(`https://api.planespotters.net/pub/photos/${path}`, {
+  const upstream = await fetch(`https://api.planespotters.net/pub/photos/hex/${hex}`, {
     headers: { "User-Agent": "CanadairTracker/1.0 (+mailto:hcasalis@gmail.com)" },
   });
   res.status(upstream.status);
