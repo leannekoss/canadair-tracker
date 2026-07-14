@@ -44,7 +44,7 @@ const geoCache = new Map();
 async function reverseName(lat, lon) {
   const key = `${lat.toFixed(2)},${lon.toFixed(2)}`;
   if (geoCache.has(key)) return geoCache.get(key);
-  let name = key;
+  let name = null; // null = hors France (aucune commune) → foyer exclu du sélecteur
   try {
     const res = await fetch(
       `https://geo.api.gouv.fr/communes?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&fields=nom,codeDepartement`
@@ -54,17 +54,23 @@ async function reverseName(lat, lon) {
       if (c?.nom) name = `${c.nom}${c.codeDepartement ? ` (${c.codeDepartement})` : ""}`;
     }
   } catch {
-    // hors France ou réseau : on garde les coordonnées
+    // réseau : on exclut plutôt que d'afficher des coordonnées brutes
   }
   geoCache.set(key, name);
   return name;
 }
 
+// Foyers nommés, France (métropole + Corse + DOM) uniquement — la bbox de requête
+// VIIRS déborde sur les pays voisins, le géocodage par commune sert de frontière.
 export async function namedFireClusters(fires) {
   const clusters = clusterFires(fires);
-  return Promise.all(
-    clusters.map(async (c) => ({ ...c, name: await reverseName(c.lat, c.lon) }))
+  const named = await Promise.all(
+    clusters.map(async (c) => {
+      const name = await reverseName(c.lat, c.lon);
+      return name ? { ...c, name } : null;
+    })
   );
+  return named.filter(Boolean);
 }
 
 export async function fetchFires() {

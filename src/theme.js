@@ -21,6 +21,31 @@ export const SURFACE = "#0b1017";
 export const MAP_STYLE =
   "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json";
 
+// Vue satellite (Esri World Imagery, raster sans clé) — assombrie/désaturée pour
+// que les trails colorés restent lisibles par-dessus
+export const SATELLITE_STYLE = {
+  version: 8,
+  sources: {
+    esri: {
+      type: "raster",
+      tiles: [
+        "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+      ],
+      tileSize: 256,
+      maxzoom: 18,
+      attribution: "© Esri, Maxar, Earthstar Geographics",
+    },
+  },
+  layers: [
+    {
+      id: "esri-imagery",
+      type: "raster",
+      source: "esri",
+      paint: { "raster-brightness-max": 0.72, "raster-saturation": -0.2 },
+    },
+  ],
+};
+
 export const FRANCE_VIEW = { longitude: 2.6, latitude: 46.6, zoom: 5.4 };
 export const FONTAINEBLEAU_VIEW = { longitude: 2.7, latitude: 48.42, zoom: 10.2 };
 export const NIMES_GARONS = { longitude: 4.4165, latitude: 43.7574 }; // base avions Sécurité Civile

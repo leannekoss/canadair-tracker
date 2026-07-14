@@ -8,7 +8,9 @@ import { MapboxOverlay } from "@deck.gl/mapbox";
 import { TripsLayer } from "@deck.gl/geo-layers";
 import { IconLayer, ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 import { positionAt } from "../lib/replay";
-import { colorFor, FIRE_COLOR, FRANCE_VIEW, INK, MAP_STYLE, NIMES_GARONS } from "../theme";
+import {
+  colorFor, FIRE_COLOR, FRANCE_VIEW, INK, MAP_STYLE, NIMES_GARONS, SATELLITE_STYLE,
+} from "../theme";
 
 // Glyphe avion vu de dessus, nez vers le nord (recoloré via mask)
 const PLANE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path fill="#fff" d="M32 3 L36.5 20 L60 30.5 L60 36.5 L36.5 31.5 L35 48 L45 56.5 L45 61 L32 56.5 L19 61 L19 56.5 L29 48 L27.5 31.5 L4 36.5 L4 30.5 L27.5 20 Z"/></svg>`;
@@ -31,6 +33,7 @@ export default function MapView({
   fires,
   showFires,
   hiddenCats,
+  satellite,
   selectedHex,
   onSelect,
   onMapReady,
@@ -38,6 +41,7 @@ export default function MapView({
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const overlayRef = useRef(null);
+  const satRef = useRef(false);
 
   // --- Init MapLibre (une seule fois) ---
   useEffect(() => {
@@ -69,6 +73,15 @@ export default function MapView({
     return () => map.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  // --- Bascule plan ↔ satellite (l'overlay deck.gl survit au setStyle) ---
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || satRef.current === satellite) return;
+    satRef.current = satellite;
+    map.setStyle(satellite ? SATELLITE_STYLE : MAP_STYLE);
+    // le listener style.load (labels français) ne s'applique qu'au style vectoriel
+  }, [satellite]);
 
   // --- Rebuild des layers deck.gl à chaque changement de données/temps ---
   useEffect(() => {

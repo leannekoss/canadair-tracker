@@ -27,6 +27,7 @@ export default function App() {
   const [showFires, setShowFires] = useState(true);
   const [showFleet, setShowFleet] = useState(true);
   const [foyers, setFoyers] = useState([]);
+  const [satellite, setSatellite] = useState(false);
   const [hiddenCats, setHiddenCats] = useState(() => new Set());
 
   const toggleCategory = useCallback((cat) => {
@@ -164,6 +165,7 @@ export default function App() {
         fires={fires}
         showFires={showFires}
         hiddenCats={hiddenCats}
+        satellite={satellite}
         selectedHex={selectedHex}
         onSelect={setSelectedHex}
         onMapReady={(m) => (mapRef.current = m)}
@@ -251,6 +253,16 @@ export default function App() {
             ))}
           </select>
         )}
+        <button
+          onClick={() => setSatellite((v) => !v)}
+          className={`rounded-md border px-3 py-1.5 font-display text-sm font-semibold tracking-wide backdrop-blur-md transition-colors ${
+            satellite
+              ? "border-ink-dim/60 bg-raise text-ink"
+              : "border-line bg-panel text-ink-faint hover:text-ink"
+          }`}
+        >
+          Satellite
+        </button>
         <button
           onClick={() => flyTo(FRANCE_VIEW)}
           className="rounded-md border border-line bg-panel px-3 py-1.5 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink"
