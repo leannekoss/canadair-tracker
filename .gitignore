@@ -3,3 +3,5 @@ dist/
 data/collect.log
 .DS_Store
 *.local
+.vercel
+.env*
