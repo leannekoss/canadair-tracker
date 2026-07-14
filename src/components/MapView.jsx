@@ -30,6 +30,7 @@ export default function MapView({
   t0,              // origine de normalisation des timestamps (float32 deck.gl)
   fires,
   showFires,
+  hiddenCats,
   selectedHex,
   onSelect,
   onMapReady,
@@ -77,7 +78,11 @@ export default function MapView({
     const now = Date.now() / 1000;
     const currentTime = (mode === "replay" ? replayTime : now) - t0;
 
-    const trailList = Object.values(trails).filter((tr) => fleetByHex[tr.hex]);
+    const visible = (hex) => {
+      const meta = fleetByHex[hex];
+      return meta && !hiddenCats?.has(meta.category);
+    };
+    const trailList = Object.values(trails).filter((tr) => visible(tr.hex));
 
     // Positions affichées : live = flux temps réel · replay = interpolation sur les traces
     let positions;
@@ -90,7 +95,7 @@ export default function MapView({
         .filter(Boolean);
     } else {
       positions = Object.values(liveMap)
-        .filter((ac) => ac.lat != null && fleetByHex[ac.hex])
+        .filter((ac) => ac.lat != null && visible(ac.hex))
         .map((ac) => ({ ...ac }));
     }
 
@@ -220,7 +225,7 @@ export default function MapView({
     ].filter(Boolean);
 
     overlay.setProps({ layers });
-  }, [fleetByHex, trails, liveMap, mode, replayTime, t0, fires, showFires, selectedHex, onSelect]);
+  }, [fleetByHex, trails, liveMap, mode, replayTime, t0, fires, showFires, hiddenCats, selectedHex, onSelect]);
 
   // h-full explicite : maplibre-gl.css force position:relative sur ce div (classe
   // maplibregl-map), ce qui neutraliserait un dimensionnement par inset-0

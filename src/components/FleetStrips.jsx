@@ -74,28 +74,39 @@ function Strip({ a, status, selected, onSelect }) {
   );
 }
 
-export default function FleetStrips({ fleet, liveMap, trails, mode, replayTime, selectedHex, onSelect }) {
+export default function FleetStrips({
+  fleet, liveMap, trails, mode, replayTime, selectedHex, onSelect,
+  hiddenCats, onToggleCategory,
+}) {
   const ctx = { mode, replayTime, liveMap, trails };
   return (
     <div className="pointer-events-auto flex max-h-[62vh] w-64 flex-col overflow-y-auto rounded-md border border-line bg-panel backdrop-blur-md">
       {GROUPS.map((g) => {
         const members = fleet.filter((a) => a.category === g.category);
         if (!members.length) return null;
+        const hidden = hiddenCats?.has(g.category);
         const statuses = members.map((a) => [a, stripStatus(a, ctx)]);
         const airborne = statuses.filter(([, s]) => s.flying).length;
         return (
           <section key={g.category}>
-            <header className="sticky top-0 flex items-baseline justify-between border-b border-line bg-panel-solid px-2.5 pb-1 pt-2">
+            {/* cliquer l'en-tête replie le groupe ET masque la famille sur la carte */}
+            <button
+              onClick={() => onToggleCategory?.(g.category)}
+              title={hidden ? "Afficher sur la carte" : "Masquer sur la carte"}
+              className={`sticky top-0 flex w-full items-baseline justify-between border-b border-line bg-panel-solid px-2.5 pb-1 pt-2 text-left ${hidden ? "opacity-50" : ""}`}
+            >
               <h2 className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-dim">
+                <span className="mr-1 inline-block w-2 text-ink-faint">{hidden ? "▸" : "▾"}</span>
                 {g.title}
               </h2>
               <span className="tnum font-display text-[11px] font-semibold text-ink-faint">
-                {airborne > 0 ? `${airborne} en vol` : members.length}
+                {hidden ? "masqué" : airborne > 0 ? `${airborne} en vol` : members.length}
               </span>
-            </header>
-            {statuses.map(([a, s]) => (
-              <Strip key={a.hex} a={a} status={s} selected={a.hex === selectedHex} onSelect={onSelect} />
-            ))}
+            </button>
+            {!hidden &&
+              statuses.map(([a, s]) => (
+                <Strip key={a.hex} a={a} status={s} selected={a.hex === selectedHex} onSelect={onSelect} />
+              ))}
           </section>
         );
       })}

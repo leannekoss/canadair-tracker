@@ -3,10 +3,11 @@ import MapView from "./components/MapView.jsx";
 import TimeBar from "./components/TimeBar.jsx";
 import FleetStrips from "./components/FleetStrips.jsx";
 import AircraftCard from "./components/AircraftCard.jsx";
+import NewsFeed from "./components/NewsFeed.jsx";
 import { useFleet } from "./lib/useFleet.js";
 import { positionAt, timeWindow } from "./lib/replay.js";
-import { fetchFires } from "./lib/fires.js";
-import { FONTAINEBLEAU_VIEW, FRANCE_VIEW } from "./theme.js";
+import { fetchFires, namedFireClusters } from "./lib/fires.js";
+import { FRANCE_VIEW } from "./theme.js";
 
 const REPLAY_TICK_MS = 50;
 const FIRES_REFRESH_MS = 15 * 60_000;
@@ -25,6 +26,17 @@ export default function App() {
   const [selectedHex, setSelectedHex] = useState(null);
   const [showFires, setShowFires] = useState(true);
   const [showFleet, setShowFleet] = useState(true);
+  const [foyers, setFoyers] = useState([]);
+  const [hiddenCats, setHiddenCats] = useState(() => new Set());
+
+  const toggleCategory = useCallback((cat) => {
+    setHiddenCats((prev) => {
+      const next = new Set(prev);
+      if (next.has(cat)) next.delete(cat);
+      else next.add(cat);
+      return next;
+    });
+  }, []);
   const [fires, setFires] = useState([]);
   const [, setClockTick] = useState(0); // re-render 1s : horloge + avance du fade live
   const mapRef = useRef(null);
@@ -76,12 +88,17 @@ export default function App() {
     }
   }, [mode, replayTime, win]);
 
-  // Hotspots incendies
+  // Hotspots incendies + foyers nommés (clusters triés par puissance)
   useEffect(() => {
     let alive = true;
     const load = () =>
       fetchFires()
-        .then((f) => alive && setFires(f))
+        .then(async (f) => {
+          if (!alive) return;
+          setFires(f);
+          const clusters = await namedFireClusters(f);
+          if (alive) setFoyers(clusters);
+        })
         .catch((e) => console.warn("fires:", e.message));
     load();
     const id = setInterval(load, FIRES_REFRESH_MS);
@@ -146,6 +163,7 @@ export default function App() {
         t0={t0}
         fires={fires}
         showFires={showFires}
+        hiddenCats={hiddenCats}
         selectedHex={selectedHex}
         onSelect={setSelectedHex}
         onMapReady={(m) => (mapRef.current = m)}
@@ -187,6 +205,8 @@ export default function App() {
             replayTime={replayTime ?? 0}
             selectedHex={selectedHex}
             onSelect={(hex) => setSelectedHex((h) => (h === hex ? null : hex))}
+            hiddenCats={hiddenCats}
+            onToggleCategory={toggleCategory}
           />
         )}
         <button
@@ -210,12 +230,27 @@ export default function App() {
         >
           ● Feux{fires.length ? ` ${fires.length}` : ""}
         </button>
-        <button
-          onClick={() => flyTo(FONTAINEBLEAU_VIEW)}
-          className="rounded-md border border-line bg-panel px-3 py-1.5 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink"
-        >
-          Fontainebleau
-        </button>
+        {/* Foyers actifs détectés (clusters VIIRS triés par puissance) */}
+        {foyers.length > 0 && (
+          <select
+            value=""
+            onChange={(e) => {
+              const f = foyers[Number(e.target.value)];
+              if (f) flyTo({ longitude: f.lon, latitude: f.lat, zoom: 10.2 });
+              e.target.value = "";
+            }}
+            className="cursor-pointer rounded-md border border-line bg-panel px-2 py-1.5 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink"
+          >
+            <option value="" disabled>
+              Foyers actifs ({foyers.length})
+            </option>
+            {foyers.map((f, i) => (
+              <option key={i} value={i}>
+                {f.name} · {f.frp.toLocaleString("fr-FR")} MW · {f.count} pts
+              </option>
+            ))}
+          </select>
+        )}
         <button
           onClick={() => flyTo(FRANCE_VIEW)}
           className="rounded-md border border-line bg-panel px-3 py-1.5 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink"
@@ -224,9 +259,9 @@ export default function App() {
         </button>
       </div>
 
-      {/* Fiche appareil */}
-      {selectedHex && fleetByHex[selectedHex] && (
-        <div className="absolute right-4 top-16">
+      {/* Colonne droite : fiche appareil + fil d'actus */}
+      <div className="absolute right-4 top-16 flex flex-col items-end gap-2">
+        {selectedHex && fleetByHex[selectedHex] && (
           <AircraftCard
             meta={fleetByHex[selectedHex]}
             live={liveMap[selectedHex]}
@@ -235,8 +270,9 @@ export default function App() {
             replayTime={replayTime ?? 0}
             onClose={() => setSelectedHex(null)}
           />
-        </div>
-      )}
+        )}
+        <NewsFeed />
+      </div>
 
       {/* Barre temporelle */}
       <div className="absolute bottom-4 left-1/2 -translate-x-1/2">

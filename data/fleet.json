@@ -1,5 +1,5 @@
 {
- "updated": "2026-07-13",
+ "updated": "2026-07-14",
  "source": "scan bloc hex 3B7Bxx via adsbdb.com",
  "aircraft": [
   {
@@ -163,6 +163,312 @@
    "category": "dash",
    "family": "Milan",
    "callsign_prefix": "MILAN"
+  },
+  {
+   "hex": "3b7b3b",
+   "reg": "F-ZBQN",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b3c",
+   "reg": "F-ZBQM",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b49",
+   "reg": "F-ZBQL",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b4a",
+   "reg": "F-ZBQK",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b4b",
+   "reg": "F-ZBQJ",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b50",
+   "reg": "F-ZBQI",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b51",
+   "reg": "F-ZBQH",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b8b",
+   "reg": "F-ZBQF",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b8c",
+   "reg": "F-ZBQE",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b8d",
+   "reg": "F-ZBQD",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b8e",
+   "reg": "F-ZBQC",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b90",
+   "reg": "F-ZBQA",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b92",
+   "reg": "F-ZBPY",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b93",
+   "reg": "F-ZBPX",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b94",
+   "reg": "F-ZBPW",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b95",
+   "reg": "F-ZBPV",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b96",
+   "reg": "F-ZBPU",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b97",
+   "reg": "F-ZBPT",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b98",
+   "reg": "F-ZBPS",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b9a",
+   "reg": "F-ZBPQ",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b9b",
+   "reg": "F-ZBPP",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b9c",
+   "reg": "F-ZBPO",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b9d",
+   "reg": "F-ZBPN",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b9e",
+   "reg": "F-ZBPM",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7b9f",
+   "reg": "F-ZBPL",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7ba0",
+   "reg": "F-ZBPK",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7ba1",
+   "reg": "F-ZBPJ",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7ba2",
+   "reg": "F-ZBPI",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7ba3",
+   "reg": "F-ZBPH",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7ba4",
+   "reg": "F-ZBPG",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7ba5",
+   "reg": "F-ZBPF",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7ba6",
+   "reg": "F-ZBPE",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7ba7",
+   "reg": "F-ZBPD",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
+  },
+  {
+   "hex": "3b7baa",
+   "reg": "F-ZBPA",
+   "type": "EC45",
+   "model": "Airbus EC145",
+   "category": "dragon",
+   "family": "Dragon",
+   "callsign_prefix": "DRAGO"
   }
  ]
 }

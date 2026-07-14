@@ -30,6 +30,15 @@ export default defineConfig({
         },
         headers: { 'User-Agent': 'CanadairTracker/1.0 (+mailto:hcasalis@gmail.com)' },
       },
+      // Flux RSS Google News incendies (CORS fermé → proxy, parse côté client)
+      '/api/news': {
+        target: 'https://news.google.com',
+        changeOrigin: true,
+        rewrite: () =>
+          '/rss/search?q=' +
+          encodeURIComponent('incendie OR canadair OR "feu de forêt" OR "sécurité civile"') +
+          '&hl=fr&gl=FR&ceid=FR:fr',
+      },
       // API live airplanes.live (v2/mil, v2/type, ...)
       '/api': {
         target: 'https://api.airplanes.live',

@@ -9,6 +9,64 @@ const VIIRS_URL =
 const FRANCE_BBOX = "-5.5,41,10,51.5";
 const MAX_AGE_HOURS = 24;
 
+// Regroupe les hotspots en foyers (grille ~0.15° ≈ 15 km), triés par puissance totale.
+export function clusterFires(fires, cell = 0.15, top = 8) {
+  const buckets = new Map();
+  for (const f of fires) {
+    const key = `${Math.round(f.lat / cell)}:${Math.round(f.lon / cell)}`;
+    let b = buckets.get(key);
+    if (!b) buckets.set(key, (b = { latW: 0, lonW: 0, sumW: 0, frp: 0, count: 0, minAge: 99 }));
+    const w = Math.max(f.frp ?? 0, 1);
+    b.latW += f.lat * w;
+    b.lonW += f.lon * w;
+    b.sumW += w;
+    b.frp += f.frp ?? 0;
+    b.count += 1;
+    b.minAge = Math.min(b.minAge, f.ageHours ?? 99);
+  }
+  return [...buckets.values()]
+    .filter((b) => b.count >= 3) // ignore les détections isolées
+    .map((b) => ({
+      lat: b.latW / b.sumW,
+      lon: b.lonW / b.sumW,
+      frp: Math.round(b.frp),
+      count: b.count,
+      minAge: b.minAge,
+    }))
+    .sort((a, b) => b.frp - a.frp)
+    .slice(0, top);
+}
+
+// Nomme un foyer par sa commune (geo.api.gouv.fr, sans clé, CORS ouvert).
+// NB : pas BAN /reverse — celle-ci cherche des ADRESSES proches et renvoie []
+// en pleine forêt, là où naissent précisément les feux.
+const geoCache = new Map();
+async function reverseName(lat, lon) {
+  const key = `${lat.toFixed(2)},${lon.toFixed(2)}`;
+  if (geoCache.has(key)) return geoCache.get(key);
+  let name = key;
+  try {
+    const res = await fetch(
+      `https://geo.api.gouv.fr/communes?lat=${lat.toFixed(4)}&lon=${lon.toFixed(4)}&fields=nom,codeDepartement`
+    );
+    if (res.ok) {
+      const [c] = await res.json();
+      if (c?.nom) name = `${c.nom}${c.codeDepartement ? ` (${c.codeDepartement})` : ""}`;
+    }
+  } catch {
+    // hors France ou réseau : on garde les coordonnées
+  }
+  geoCache.set(key, name);
+  return name;
+}
+
+export async function namedFireClusters(fires) {
+  const clusters = clusterFires(fires);
+  return Promise.all(
+    clusters.map(async (c) => ({ ...c, name: await reverseName(c.lat, c.lon) }))
+  );
+}
+
 export async function fetchFires() {
   const params = new URLSearchParams({
     where: `hours_old<=${MAX_AGE_HOURS}`,
