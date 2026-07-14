@@ -76,11 +76,11 @@ function Strip({ a, status, selected, onSelect }) {
 
 export default function FleetStrips({
   fleet, liveMap, trails, mode, replayTime, selectedHex, onSelect,
-  hiddenCats, onToggleCategory,
+  hiddenCats, onToggleCategory, className = "max-h-[62vh] w-64",
 }) {
   const ctx = { mode, replayTime, liveMap, trails };
   return (
-    <div className="pointer-events-auto flex max-h-[62vh] w-64 flex-col overflow-y-auto rounded-md border border-line bg-panel backdrop-blur-md">
+    <div className={`pointer-events-auto flex flex-col overflow-y-auto rounded-md border border-line bg-panel backdrop-blur-md ${className}`}>
       {GROUPS.map((g) => {
         const members = fleet.filter((a) => a.category === g.category);
         if (!members.length) return null;

@@ -14,7 +14,7 @@ function relTime(date) {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
-export default function NewsFeed() {
+export default function NewsFeed({ className = "w-72", listClassName = "max-h-[38vh]" }) {
   const [items, setItems] = useState([]);
   const [open, setOpen] = useState(true);
 
@@ -35,7 +35,7 @@ export default function NewsFeed() {
   if (!items.length) return null;
 
   return (
-    <aside className="pointer-events-auto w-72 overflow-hidden rounded-md border border-line bg-panel backdrop-blur-md">
+    <aside className={`pointer-events-auto flex flex-col overflow-hidden rounded-md border border-line bg-panel backdrop-blur-md ${className}`}>
       <button
         onClick={() => setOpen((v) => !v)}
         className="flex w-full items-baseline justify-between px-3 pb-1.5 pt-2 text-left"
@@ -47,7 +47,7 @@ export default function NewsFeed() {
         <span className="font-display text-xs font-bold text-ink-faint">{open ? "‹" : "›"}</span>
       </button>
       {open && (
-        <ol className="max-h-[38vh] overflow-y-auto border-t border-line">
+        <ol className={`overflow-y-auto border-t border-line ${listClassName}`}>
           {items.map((n, i) => (
             <li key={i} className={i > 0 ? "border-t border-line/50" : ""}>
               <a

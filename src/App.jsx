@@ -26,7 +26,8 @@ export default function App() {
   const [speed, setSpeed] = useState(60);
   const [selectedHex, setSelectedHex] = useState(null);
   const [showFires, setShowFires] = useState(true);
-  const [showFleet, setShowFleet] = useState(true);
+  const [showFleet, setShowFleet] = useState(true); // desktop
+  const [mobilePanel, setMobilePanel] = useState(null); // mobile : 'fleet' | 'news' | null
   const [foyers, setFoyers] = useState([]);
   const [satellite, setSatellite] = useState(false);
   const [hiddenCats, setHiddenCats] = useState(() => new Set());
@@ -180,19 +181,19 @@ export default function App() {
         onMapReady={(m) => (mapRef.current = m)}
       />
 
-      {/* Header — identité + état du dispositif */}
-      <header className="pointer-events-none absolute left-4 top-4">
-        <div className="pointer-events-auto rounded-md border border-line bg-panel px-4 py-2.5 backdrop-blur-md">
-          <h1 className="font-display text-[22px] font-bold leading-none tracking-wide text-ink">
+      {/* Header — identité + état du dispositif (compact sur mobile) */}
+      <header className="pointer-events-none absolute left-2 right-2 top-2 md:left-4 md:right-auto md:top-4">
+        <div className="pointer-events-auto flex items-baseline gap-2 rounded-md border border-line bg-panel px-3 py-2 backdrop-blur-md md:block md:px-4 md:py-2.5">
+          <h1 className="font-display text-[17px] font-bold leading-none tracking-wide text-ink md:text-[22px]">
             CANADAIR TRACKER
           </h1>
-          <p className="mt-1 text-xs text-ink-dim">
-            Bombardiers d'eau · Sécurité Civile
-            <span className="tnum ml-2 font-semibold text-ink">
+          <p className="min-w-0 flex-1 truncate text-[11px] text-ink-dim md:mt-1 md:text-xs">
+            <span className="hidden md:inline">Bombardiers d'eau · Sécurité Civile</span>
+            <span className="tnum font-semibold text-ink md:ml-2">
               {airborne > 0 ? `${airborne} en vol` : "aucun vol en cours"}
             </span>
             {lastUpdate && mode === "live" && (
-              <span className="tnum ml-2 text-ink-faint">
+              <span className="tnum ml-2 hidden text-ink-faint md:inline">
                 maj {new Date(lastUpdate).toLocaleTimeString("fr-FR")}
               </span>
             )}
@@ -205,8 +206,84 @@ export default function App() {
         )}
       </header>
 
-      {/* Panneau flotte (repliable pour dégager la carte) */}
-      <div className="absolute left-4 top-[92px] flex items-start gap-1">
+      {/* Contrôles : rangée scrollable sous le header (mobile) / haut-droite (desktop) */}
+      <div className="no-scrollbar absolute left-2 right-2 top-[52px] flex gap-1.5 overflow-x-auto pb-1 md:left-auto md:right-4 md:top-4 md:overflow-visible md:pb-0">
+        {/* mobile : ouvre les panneaux */}
+        <button
+          onClick={() => setMobilePanel((p) => (p === "fleet" ? null : "fleet"))}
+          className={`shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md md:hidden ${
+            mobilePanel === "fleet" ? "border-ink-dim/60 bg-raise text-ink" : "border-line bg-panel text-ink-dim"
+          }`}
+        >
+          Flotte
+        </button>
+        <button
+          onClick={() => setMobilePanel((p) => (p === "news" ? null : "news"))}
+          className={`shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md md:hidden ${
+            mobilePanel === "news" ? "border-ink-dim/60 bg-raise text-ink" : "border-line bg-panel text-ink-dim"
+          }`}
+        >
+          Actus
+        </button>
+        <button
+          onClick={() => setShowFires((v) => !v)}
+          className={`shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md transition-colors md:py-1.5 ${
+            showFires
+              ? "border-fire/50 bg-fire/15 text-ink"
+              : "border-line bg-panel text-ink-faint hover:text-ink"
+          }`}
+        >
+          ● Feux{fires.length ? ` ${fires.length}` : ""}
+        </button>
+        {/* Foyers actifs détectés (clusters VIIRS triés par puissance) */}
+        {foyers.length > 0 && (
+          <select
+            value=""
+            onChange={(e) => {
+              const f = foyers[Number(e.target.value)];
+              if (f) flyTo({ longitude: f.lon, latitude: f.lat, zoom: 10.2 });
+              e.target.value = "";
+            }}
+            className="shrink-0 cursor-pointer rounded-md border border-line bg-panel px-2 py-2 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink md:py-1.5"
+          >
+            <option value="" disabled>
+              Foyers ({foyers.length})
+            </option>
+            {foyers.map((f, i) => (
+              <option key={i} value={i}>
+                {f.active ? "🔥" : "🌫"} {f.name} · {f.frp.toLocaleString("fr-FR")} MW
+                {f.active ? "" : " · en extinction"}
+              </option>
+            ))}
+          </select>
+        )}
+        <button
+          onClick={() => setSatellite((v) => !v)}
+          className={`shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md transition-colors md:py-1.5 ${
+            satellite
+              ? "border-ink-dim/60 bg-raise text-ink"
+              : "border-line bg-panel text-ink-faint hover:text-ink"
+          }`}
+        >
+          Satellite
+        </button>
+        <button
+          onClick={() => flyTo(FRANCE_VIEW)}
+          className="shrink-0 rounded-md border border-line bg-panel px-3 py-2 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink md:py-1.5"
+        >
+          France
+        </button>
+        <a
+          href="/methodo.html"
+          title="Sources & méthodologie"
+          className="shrink-0 rounded-md border border-line bg-panel px-3 py-2 font-display text-sm font-semibold text-ink-faint backdrop-blur-md md:hidden"
+        >
+          ⓘ
+        </a>
+      </div>
+
+      {/* Panneau flotte — desktop : colonne gauche · mobile : overlay via bouton Flotte */}
+      <div className="absolute left-4 top-[92px] hidden items-start gap-1 md:flex">
         {showFleet && (
           <FleetStrips
             fleet={fleet}
@@ -228,61 +305,33 @@ export default function App() {
           {showFleet ? "‹" : "flotte ›"}
         </button>
       </div>
-
-      {/* Contrôles de vue + feux */}
-      <div className="absolute right-4 top-4 flex gap-1.5">
-        <button
-          onClick={() => setShowFires((v) => !v)}
-          className={`rounded-md border px-3 py-1.5 font-display text-sm font-semibold tracking-wide backdrop-blur-md transition-colors ${
-            showFires
-              ? "border-fire/50 bg-fire/15 text-ink"
-              : "border-line bg-panel text-ink-faint hover:text-ink"
-          }`}
-        >
-          ● Feux{fires.length ? ` ${fires.length}` : ""}
-        </button>
-        {/* Foyers actifs détectés (clusters VIIRS triés par puissance) */}
-        {foyers.length > 0 && (
-          <select
-            value=""
-            onChange={(e) => {
-              const f = foyers[Number(e.target.value)];
-              if (f) flyTo({ longitude: f.lon, latitude: f.lat, zoom: 10.2 });
-              e.target.value = "";
+      {mobilePanel === "fleet" && (
+        <div className="absolute inset-x-2 bottom-[118px] top-[104px] z-20 md:hidden">
+          <FleetStrips
+            fleet={fleet}
+            liveMap={liveMap}
+            trails={trails}
+            mode={mode}
+            replayTime={replayTime ?? 0}
+            selectedHex={selectedHex}
+            onSelect={(hex) => {
+              setSelectedHex((h) => (h === hex ? null : hex));
+              setMobilePanel(null); // referme pour voir la carte + la fiche
             }}
-            className="cursor-pointer rounded-md border border-line bg-panel px-2 py-1.5 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink"
-          >
-            <option value="" disabled>
-              Foyers actifs ({foyers.length})
-            </option>
-            {foyers.map((f, i) => (
-              <option key={i} value={i}>
-                {f.active ? "🔥" : "🌫"} {f.name} · {f.frp.toLocaleString("fr-FR")} MW
-                {f.active ? "" : " · en extinction"}
-              </option>
-            ))}
-          </select>
-        )}
-        <button
-          onClick={() => setSatellite((v) => !v)}
-          className={`rounded-md border px-3 py-1.5 font-display text-sm font-semibold tracking-wide backdrop-blur-md transition-colors ${
-            satellite
-              ? "border-ink-dim/60 bg-raise text-ink"
-              : "border-line bg-panel text-ink-faint hover:text-ink"
-          }`}
-        >
-          Satellite
-        </button>
-        <button
-          onClick={() => flyTo(FRANCE_VIEW)}
-          className="rounded-md border border-line bg-panel px-3 py-1.5 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink"
-        >
-          France
-        </button>
-      </div>
+            hiddenCats={hiddenCats}
+            onToggleCategory={toggleCategory}
+            className="h-full w-full max-h-none"
+          />
+        </div>
+      )}
+      {mobilePanel === "news" && (
+        <div className="absolute inset-x-2 bottom-[118px] top-[104px] z-20 md:hidden">
+          <NewsFeed className="h-full w-full" listClassName="max-h-none flex-1" />
+        </div>
+      )}
 
-      {/* Colonne droite : fiche appareil + fil d'actus */}
-      <div className="absolute right-4 top-16 flex flex-col items-end gap-2">
+      {/* Desktop : fiche appareil + fil d'actus en colonne droite */}
+      <div className="absolute right-4 top-16 hidden flex-col items-end gap-2 md:flex">
         {selectedHex && fleetByHex[selectedHex] && (
           <AircraftCard
             meta={fleetByHex[selectedHex]}
@@ -297,8 +346,25 @@ export default function App() {
         <NewsFeed />
       </div>
 
-      {/* Footer : sources & auteur */}
-      <footer className="absolute bottom-4 left-4 flex flex-col gap-0.5 text-[11px]">
+      {/* Mobile : fiche appareil en bottom sheet au-dessus de la barre temporelle */}
+      {selectedHex && fleetByHex[selectedHex] && (
+        <div className="absolute inset-x-2 bottom-[118px] z-30 md:hidden">
+          <AircraftCard
+            meta={fleetByHex[selectedHex]}
+            live={liveMap[selectedHex]}
+            trail={trails[selectedHex]}
+            mission={mission}
+            mode={mode}
+            replayTime={replayTime ?? 0}
+            onClose={() => setSelectedHex(null)}
+            className="w-full"
+            compact
+          />
+        </div>
+      )}
+
+      {/* Footer : sources & auteur (desktop — sur mobile : chip ⓘ) */}
+      <footer className="absolute bottom-4 left-4 hidden flex-col gap-0.5 text-[11px] md:flex">
         <a
           href="/methodo.html"
           className="pointer-events-auto text-ink-faint transition-colors hover:text-ink"
@@ -316,7 +382,7 @@ export default function App() {
       </footer>
 
       {/* Barre temporelle */}
-      <div className="absolute bottom-4 left-1/2 -translate-x-1/2">
+      <div className="absolute inset-x-2 bottom-2 md:inset-x-auto md:bottom-4 md:left-1/2 md:-translate-x-1/2">
         <TimeBar
           mode={mode}
           window={win}

@@ -70,7 +70,10 @@ function usePlaceNames(points) {
   return names;
 }
 
-export default function AircraftCard({ meta, live, trail, mission, mode, replayTime, onClose }) {
+export default function AircraftCard({
+  meta, live, trail, mission, mode, replayTime, onClose,
+  className = "w-72", compact = false,
+}) {
   const photo = usePhoto(meta.hex);
   const color = CATEGORY_HEX[meta.category] ?? "#94a1b5";
   const scoopPlaces = usePlaceNames(mission?.scoopClusters);
@@ -83,13 +86,13 @@ export default function AircraftCard({ meta, live, trail, mission, mode, replayT
   const distKm = trail ? trailDistanceKm(trail) : null;
 
   return (
-    <article className="pointer-events-auto w-72 overflow-hidden rounded-md border border-line bg-panel backdrop-blur-md">
+    <article className={`pointer-events-auto overflow-hidden rounded-md border border-line bg-panel backdrop-blur-md ${className}`}>
       {photo?.thumbnail_large?.src && (
         <div className="relative">
           <img
             src={photo.thumbnail_large.src}
             alt={`${meta.model} ${meta.reg}`}
-            className="h-36 w-full object-cover"
+            className={`${compact ? "h-24" : "h-36"} w-full object-cover`}
           />
           <span className="absolute bottom-1 right-1.5 text-[9px] text-ink-dim/80">
             © {photo.photographer} · planespotters.net

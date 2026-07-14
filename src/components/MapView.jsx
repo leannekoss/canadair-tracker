@@ -66,7 +66,8 @@ export default function MapView({
         }
       }
     });
-    const overlay = new MapboxOverlay({ interleaved: false, layers: [] });
+    // pickingRadius : tolérance de sélection autour du pointeur — indispensable au doigt
+    const overlay = new MapboxOverlay({ interleaved: false, pickingRadius: 16, layers: [] });
     map.addControl(overlay);
     mapRef.current = map;
     overlayRef.current = overlay;

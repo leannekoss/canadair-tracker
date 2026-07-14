@@ -44,6 +44,14 @@ body,
   font-variant-numeric: tabular-nums;
 }
 
+/* Rangée de chips scrollable sans barre visible (mobile) */
+.no-scrollbar {
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
 /* Le slider replay — piste fine, poignée nette, pas de chrome navigateur */
 input[type="range"].timebar {
   -webkit-appearance: none;
@@ -96,4 +104,14 @@ input[type="range"].timebar::-moz-range-thumb {
 }
 .maplibregl-ctrl-attrib a {
   color: var(--color-ink-faint) !important;
+}
+
+/* Mobile : le pinch remplace les boutons zoom, l'attribution remonte au-dessus de la timebar */
+@media (max-width: 767px) {
+  .maplibregl-ctrl-bottom-right .maplibregl-ctrl-group {
+    display: none;
+  }
+  .maplibregl-ctrl-bottom-right {
+    bottom: 108px;
+  }
 }

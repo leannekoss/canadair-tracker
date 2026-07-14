@@ -1,4 +1,5 @@
 // Barre temporelle : bascule LIVE/REPLAY, scrubber, vitesse, sélecteur de journée.
+// Mobile : contrôles sur une ligne + slider pleine largeur en dessous · desktop : une ligne.
 
 const SPEEDS = [10, 60, 300];
 
@@ -43,12 +44,12 @@ export default function TimeBar({
   ];
 
   return (
-    <div className="pointer-events-auto flex items-center gap-4 rounded-md border border-line bg-panel px-4 py-2.5 backdrop-blur-md">
+    <div className="pointer-events-auto flex flex-wrap items-center gap-x-3 gap-y-1.5 rounded-md border border-line bg-panel px-3 py-2 backdrop-blur-md md:gap-4 md:px-4 md:py-2.5">
       {/* Journée */}
       <select
         value={selectedDate}
         onChange={(e) => onDateChange(e.target.value)}
-        className="cursor-pointer rounded-sm border border-line bg-raise px-2 py-1 font-display text-sm font-semibold tracking-wide text-ink outline-none"
+        className="cursor-pointer rounded-sm border border-line bg-raise px-2 py-1.5 font-display text-sm font-semibold tracking-wide text-ink outline-none md:py-1"
       >
         {dates.map((d) => (
           <option key={d.value} value={d.value}>
@@ -78,7 +79,7 @@ export default function TimeBar({
         onClick={onPlayToggle}
         disabled={!hasWindow}
         title={playing ? "Pause" : "Rejouer"}
-        className="grid h-8 w-8 place-items-center rounded-sm border border-line bg-raise text-ink transition-colors hover:border-ink-faint disabled:opacity-40"
+        className="grid h-9 w-9 place-items-center rounded-sm border border-line bg-raise text-ink transition-colors hover:border-ink-faint disabled:opacity-40 md:h-8 md:w-8"
       >
         {playing ? (
           <svg width="11" height="12" viewBox="0 0 11 12" fill="currentColor"><rect width="4" height="12" /><rect x="7" width="4" height="12" /></svg>
@@ -87,8 +88,30 @@ export default function TimeBar({
         )}
       </button>
 
-      {/* Scrubber */}
-      <div className="flex w-[34vw] min-w-56 items-center gap-3">
+      {/* Horloge */}
+      <div className="tnum ml-auto font-display text-lg font-bold text-ink md:ml-0 md:w-14 md:text-center">
+        {mode === "replay" && replayTime ? fmtClock(replayTime) : fmtClock(Date.now() / 1000)}
+      </div>
+
+      {/* Vitesses */}
+      <div className="flex gap-1">
+        {SPEEDS.map((s) => (
+          <button
+            key={s}
+            onClick={() => onSpeedChange(s)}
+            className={`rounded-sm px-2 py-1 font-display text-xs font-semibold tracking-wide transition-colors md:px-1.5 md:py-0.5 ${
+              speed === s && mode === "replay"
+                ? "bg-ink text-surface"
+                : "text-ink-faint hover:text-ink"
+            }`}
+          >
+            ×{s}
+          </button>
+        ))}
+      </div>
+
+      {/* Scrubber — pleine largeur sur mobile, inline sur desktop */}
+      <div className="order-last flex w-full items-center gap-3 md:order-none md:w-[30vw] md:min-w-56">
         <span className="tnum font-display text-xs font-semibold text-ink-dim">
           {hasWindow ? fmtClock(win.start) : "--:--"}
         </span>
@@ -107,30 +130,8 @@ export default function TimeBar({
         </span>
       </div>
 
-      {/* Horloge replay */}
-      <div className="tnum w-14 text-center font-display text-lg font-bold text-ink">
-        {mode === "replay" && replayTime ? fmtClock(replayTime) : fmtClock(Date.now() / 1000)}
-      </div>
-
-      {/* Vitesses */}
-      <div className="flex gap-1">
-        {SPEEDS.map((s) => (
-          <button
-            key={s}
-            onClick={() => onSpeedChange(s)}
-            className={`rounded-sm px-1.5 py-0.5 font-display text-xs font-semibold tracking-wide transition-colors ${
-              speed === s && mode === "replay"
-                ? "bg-ink text-surface"
-                : "text-ink-faint hover:text-ink"
-            }`}
-          >
-            ×{s}
-          </button>
-        ))}
-      </div>
-
       {trailsLoading && (
-        <span className="font-display text-xs font-semibold tracking-wide text-ink-faint">
+        <span className="hidden font-display text-xs font-semibold tracking-wide text-ink-faint md:inline">
           chargement des traces…
         </span>
       )}
