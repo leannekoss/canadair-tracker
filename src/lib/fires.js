@@ -63,11 +63,12 @@ async function reverseName(lat, lon) {
     if (res.ok) {
       const [c] = await res.json();
       if (c?.nom) name = `${c.nom}${c.codeDepartement ? ` (${c.codeDepartement})` : ""}`;
+      geoCache.set(key, name); // réponse valide : cacher aussi le null (vrai hors France)
     }
   } catch {
-    // réseau : on exclut plutôt que d'afficher des coordonnées brutes
+    // échec transitoire (réseau, 5xx) : NE PAS cacher — un foyer français serait
+    // exclu du sélecteur pour toute la session ; on retentera au prochain refresh
   }
-  geoCache.set(key, name);
   return name;
 }
 

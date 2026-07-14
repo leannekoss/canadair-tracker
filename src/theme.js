@@ -46,6 +46,9 @@ export const SATELLITE_STYLE = {
       ],
       tileSize: 256,
       maxzoom: 21,
+      // couverture France uniquement : sans bounds, chaque déplacement hors de
+      // France déclenche des rafales de requêtes 404 vers la Géoplateforme
+      bounds: [-5.7, 41.2, 10.0, 51.3],
       attribution: "© IGN",
     },
   },

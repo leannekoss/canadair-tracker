@@ -52,10 +52,15 @@ export function useFleet() {
   const loadSeq = useRef(0); // invalide les chargements de trails obsolètes
 
   // --- Trails (traces du jour ou archive) --------------------------------
-  const loadTrails = useCallback(async (date) => {
+  // reset=true : changement de journée (on repart de zéro, l'UI passe en chargement).
+  // reset=false : resync périodique — on merge trace par trace SANS vider, sinon la
+  // carte se blanke et le replay en cours perd sa fenêtre pendant 10-30 s.
+  const loadTrails = useCallback(async (date, { reset = true } = {}) => {
     const seq = ++loadSeq.current;
-    setTrailsLoading(true);
-    setTrails({});
+    if (reset) {
+      setTrailsLoading(true);
+      setTrails({});
+    }
     const hexes =
       date === "today"
         ? fleetRef.current.map((a) => a.hex)
@@ -73,7 +78,7 @@ export function useFleet() {
       }
       await sleep(120); // politesse rate limit
     }
-    if (loadSeq.current === seq) setTrailsLoading(false);
+    if (reset && loadSeq.current === seq) setTrailsLoading(false);
   }, []);
 
   useEffect(() => {
@@ -83,7 +88,7 @@ export function useFleet() {
   // resync périodique des traces du jour (elles grossissent au fil de la journée)
   useEffect(() => {
     if (selectedDate !== "today") return;
-    const id = setInterval(() => loadTrails("today"), TRACE_REFRESH_MS);
+    const id = setInterval(() => loadTrails("today", { reset: false }), TRACE_REFRESH_MS);
     return () => clearInterval(id);
   }, [selectedDate, loadTrails]);
 
@@ -96,6 +101,9 @@ export function useFleet() {
   useEffect(() => {
     let tick = 0;
     let stopped = false;
+    // les bombardiers étrangers ne sont rafraîchis qu'1 tick sur 5 : on garde leur
+    // dernière position entre-temps, sinon ils clignotent (absents 48 s par minute)
+    let extrasCache = { list: [], at: 0 };
 
     async function poll() {
       try {
@@ -106,16 +114,18 @@ export function useFleet() {
             hexSet.has(ac.hex) ||
             (BOMBER_TYPES.has(ac.type) && (ac.reg ?? "").startsWith("F-Z"))
         );
-        let extras = [];
         if (tick % AT8T_EVERY_N_TICKS === 0) {
-          extras = await fetchLiveEuroBombers();
+          extrasCache = { list: await fetchLiveEuroBombers(), at: Date.now() };
         }
         tick++;
         if (stopped) return;
+        const extras = Date.now() - extrasCache.at < 120_000 ? extrasCache.list : [];
 
-        // auto-découverte
-        const known = new Set(fleetRef.current.map((a) => a.hex));
-        const newcomers = [...relevant, ...extras].filter((ac) => ac.hex && !known.has(ac.hex));
+        // auto-découverte (dédupliquée : un hex peut apparaître dans mil ET extras)
+        const seen = new Set(fleetRef.current.map((a) => a.hex));
+        const newcomers = [...relevant, ...extras].filter(
+          (ac) => ac.hex && !seen.has(ac.hex) && (seen.add(ac.hex), true)
+        );
         if (newcomers.length) {
           setFleet((prev) => [...prev, ...newcomers.map(discoveredMeta)]);
         }

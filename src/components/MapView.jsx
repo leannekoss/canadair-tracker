@@ -1,7 +1,7 @@
 // Carte MapLibre + deck.gl : trails animés (TripsLayer), positions (IconLayer),
 // callsigns (TextLayer), hotspots incendies (ScatterplotLayer).
 
-import { useEffect, useRef } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { MapboxOverlay } from "@deck.gl/mapbox";
@@ -85,10 +85,26 @@ export default function MapView({
     // le listener style.load (labels français) ne s'applique qu'au style vectoriel
   }, [satellite]);
 
+  // Données de trails STABLES entre les ticks du replay : en lecture, seul
+  // currentTime change 20×/s — si data changeait de référence à chaque frame,
+  // deck.gl recalculerait et re-uploaderait tous les attributs GPU en continu.
+  const trailList = useMemo(
+    () =>
+      Object.values(trails).filter((tr) => {
+        const meta = fleetByHex[tr.hex];
+        return meta && !hiddenCats?.has(meta.category);
+      }),
+    [trails, fleetByHex, hiddenCats]
+  );
+
   // --- Rebuild des layers deck.gl à chaque changement de données/temps ---
   useEffect(() => {
     const overlay = overlayRef.current;
-    if (!overlay || t0 == null) return;
+    if (!overlay) return;
+    if (t0 == null) {
+      overlay.setProps({ layers: [] }); // aucune trace : ne pas figer des layers périmés
+      return;
+    }
 
     const now = Date.now() / 1000;
     const currentTime = (mode === "replay" ? replayTime : now) - t0;
@@ -97,7 +113,6 @@ export default function MapView({
       const meta = fleetByHex[hex];
       return meta && !hiddenCats?.has(meta.category);
     };
-    const trailList = Object.values(trails).filter((tr) => visible(tr.hex));
 
     // Positions affichées : live = flux temps réel · replay = interpolation sur les traces
     let positions;
@@ -182,6 +197,7 @@ export default function MapView({
         currentTime,
         updateTriggers: {
           getColor: [selectedHex],
+          getTimestamps: [t0],
         },
       }),
       // Points d'écopage estimés de l'appareil sélectionné (anneaux « eau »)
@@ -256,7 +272,7 @@ export default function MapView({
     ].filter(Boolean);
 
     overlay.setProps({ layers });
-  }, [fleetByHex, trails, liveMap, mode, replayTime, t0, fires, showFires, hiddenCats, mission, selectedHex, onSelect]);
+  }, [fleetByHex, trailList, liveMap, mode, replayTime, t0, fires, showFires, hiddenCats, mission, selectedHex, onSelect]);
 
   // h-full explicite : maplibre-gl.css force position:relative sur ce div (classe
   // maplibregl-map), ce qui neutraliserait un dimensionnement par inset-0

@@ -61,7 +61,7 @@ function usePlaceNames(points) {
     }
     let alive = true;
     Promise.all(points.slice(0, 4).map((p) => communeName(p.lat, p.lon))).then(
-      (res) => alive && setNames(res.filter(Boolean))
+      (res) => alive && setNames([...new Set(res.filter(Boolean))])
     );
     return () => {
       alive = false;

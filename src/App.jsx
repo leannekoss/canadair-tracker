@@ -13,6 +13,21 @@ import { FRANCE_VIEW } from "./theme.js";
 const REPLAY_TICK_MS = 50;
 const FIRES_REFRESH_MS = 15 * 60_000;
 
+// Montage conditionnel réel des panneaux desktop/mobile : le simple `hidden md:`
+// laisserait deux instances montées (double fetch NewsFeed, strips fantômes).
+function useIsDesktop() {
+  const [isDesktop, setIsDesktop] = useState(
+    () => window.matchMedia("(min-width: 768px)").matches
+  );
+  useEffect(() => {
+    const mq = window.matchMedia("(min-width: 768px)");
+    const onChange = (e) => setIsDesktop(e.matches);
+    mq.addEventListener("change", onChange);
+    return () => mq.removeEventListener("change", onChange);
+  }, []);
+  return isDesktop;
+}
+
 export default function App() {
   const {
     fleet, liveMap, trails, trailsLoading,
@@ -20,6 +35,7 @@ export default function App() {
     lastUpdate, error,
   } = useFleet();
 
+  const isDesktop = useIsDesktop();
   const [mode, setMode] = useState("live");
   const [replayTime, setReplayTime] = useState(null);
   const [playing, setPlaying] = useState(false);
@@ -91,11 +107,14 @@ export default function App() {
     }
   }, [selectedDate]);
 
+  // ne caler le début du replay qu'une fois la journée entièrement chargée :
+  // pendant le chargement, la fenêtre ne couvre que les premières traces et le
+  // replay démarrerait à un instant arbitraire (ex. le vol de nuit d'un Dragon)
   useEffect(() => {
-    if (mode === "replay" && replayTime == null && win) {
+    if (mode === "replay" && replayTime == null && win && !trailsLoading) {
       setReplayTime(win.start);
     }
-  }, [mode, replayTime, win]);
+  }, [mode, replayTime, win, trailsLoading]);
 
   // Hotspots incendies + foyers nommés (clusters triés par puissance)
   useEffect(() => {
@@ -199,12 +218,13 @@ export default function App() {
             )}
           </p>
         </div>
-        {error && (
-          <div className="pointer-events-auto mt-2 rounded-md border border-alert/60 bg-alert/15 px-3 py-1.5 text-xs font-semibold text-ink backdrop-blur-md">
-            Flux live indisponible : {error}
-          </div>
-        )}
       </header>
+      {/* Bandeau d'erreur : sous la rangée de chips (mobile) / sous le header (desktop) */}
+      {error && (
+        <div className="pointer-events-auto absolute left-2 right-2 top-[104px] rounded-md border border-alert/60 bg-alert/15 px-3 py-1.5 text-xs font-semibold text-ink backdrop-blur-md md:left-4 md:right-auto md:top-[76px]">
+          Flux live indisponible : {error}
+        </div>
+      )}
 
       {/* Contrôles : rangée scrollable sous le header (mobile) / haut-droite (desktop) */}
       <div className="no-scrollbar absolute left-2 right-2 top-[52px] flex gap-1.5 overflow-x-auto pb-1 md:left-auto md:right-4 md:top-4 md:overflow-visible md:pb-0">
@@ -283,7 +303,8 @@ export default function App() {
       </div>
 
       {/* Panneau flotte — desktop : colonne gauche · mobile : overlay via bouton Flotte */}
-      <div className="absolute left-4 top-[92px] hidden items-start gap-1 md:flex">
+      {isDesktop && (
+      <div className="absolute left-4 top-[92px] flex items-start gap-1">
         {showFleet && (
           <FleetStrips
             fleet={fleet}
@@ -305,7 +326,8 @@ export default function App() {
           {showFleet ? "‹" : "flotte ›"}
         </button>
       </div>
-      {mobilePanel === "fleet" && (
+      )}
+      {!isDesktop && mobilePanel === "fleet" && (
         <div className="absolute inset-x-2 bottom-[118px] top-[104px] z-20 md:hidden">
           <FleetStrips
             fleet={fleet}
@@ -324,14 +346,15 @@ export default function App() {
           />
         </div>
       )}
-      {mobilePanel === "news" && (
-        <div className="absolute inset-x-2 bottom-[118px] top-[104px] z-20 md:hidden">
+      {!isDesktop && mobilePanel === "news" && (
+        <div className="absolute inset-x-2 bottom-[130px] top-[104px] z-20">
           <NewsFeed className="h-full w-full" listClassName="max-h-none flex-1" />
         </div>
       )}
 
       {/* Desktop : fiche appareil + fil d'actus en colonne droite */}
-      <div className="absolute right-4 top-16 hidden flex-col items-end gap-2 md:flex">
+      {isDesktop && (
+      <div className="absolute right-4 top-16 flex flex-col items-end gap-2">
         {selectedHex && fleetByHex[selectedHex] && (
           <AircraftCard
             meta={fleetByHex[selectedHex]}
@@ -345,10 +368,11 @@ export default function App() {
         )}
         <NewsFeed />
       </div>
+      )}
 
       {/* Mobile : fiche appareil en bottom sheet au-dessus de la barre temporelle */}
-      {selectedHex && fleetByHex[selectedHex] && (
-        <div className="absolute inset-x-2 bottom-[118px] z-30 md:hidden">
+      {!isDesktop && selectedHex && fleetByHex[selectedHex] && (
+        <div className="absolute inset-x-2 bottom-[130px] z-30">
           <AircraftCard
             meta={fleetByHex[selectedHex]}
             live={liveMap[selectedHex]}
@@ -396,7 +420,9 @@ export default function App() {
           onPlayToggle={handlePlayToggle}
           onSpeedChange={(s) => {
             setSpeed(s);
-            if (mode !== "replay") handlePlayToggle();
+            // ne lance la lecture que si une fenêtre chargée existe, sinon on
+            // basculerait en replay figé sur un écran vide
+            if (mode !== "replay" && win && !trailsLoading) handlePlayToggle();
           }}
           onGoLive={handleGoLive}
           onDateChange={setSelectedDate}

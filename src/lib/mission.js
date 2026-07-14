@@ -58,7 +58,8 @@ export function detectScoops(trail) {
     if (scooping && start == null) start = i;
     if (!scooping && start != null) {
       const dur = pts[i - 1].t - pts[start].t;
-      // remontée dans les 3 min qui suivent ?
+      // encadrée de VOL des deux côtés : une remontée après (sinon atterrissage)
+      // ET du vol avant (sinon c'est un décollage — roulage rapide puis montée)
       let climbs = false;
       for (let j = i; j < pts.length && pts[j].t - pts[i - 1].t < 180; j++) {
         if (pts[j].alt != null && pts[j].alt > CLIMB_ALT_FT) {
@@ -66,7 +67,14 @@ export function detectScoops(trail) {
           break;
         }
       }
-      if (dur >= 4 && dur <= SCOOP_MAX_S && climbs) {
+      let wasAirborne = false;
+      for (let j = start - 1; j >= 0 && pts[start].t - pts[j].t < 180; j--) {
+        if (pts[j].alt != null && pts[j].alt > CLIMB_ALT_FT) {
+          wasAirborne = true;
+          break;
+        }
+      }
+      if (dur >= 4 && dur <= SCOOP_MAX_S && climbs && wasAirborne) {
         const mid = pts[Math.floor((start + i - 1) / 2)];
         scoops.push({ lat: mid.lat, lon: mid.lon, t: mid.t });
       }

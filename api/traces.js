@@ -9,10 +9,15 @@ export default async function handler(req, res) {
   if (!/^[0-9a-f]{6}$/.test(hex)) {
     return res.status(400).json({ error: "paramètre hex invalide" });
   }
-  const upstream = await fetch(
-    `https://globe.airplanes.live/data/traces/${hex.slice(-2)}/trace_full_${hex}.json`,
-    { headers: { Referer: "https://globe.airplanes.live/" } }
-  );
+  let upstream;
+  try {
+    upstream = await fetch(
+      `https://globe.airplanes.live/data/traces/${hex.slice(-2)}/trace_full_${hex}.json`,
+      { headers: { Referer: "https://globe.airplanes.live/" } }
+    );
+  } catch {
+    return res.status(502).json({ error: "amont indisponible" });
+  }
   res.status(upstream.status);
   res.setHeader("Content-Type", "application/json");
   // trace du jour : évolue en continu → cache CDN court

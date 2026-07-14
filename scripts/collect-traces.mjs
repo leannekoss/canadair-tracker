@@ -36,10 +36,21 @@ mkdirSync(outDir, { recursive: true });
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 let saved = 0, empty = 0, failed = 0;
 
+// 1 retry après 5 s : un échec réseau transitoire ne doit pas coûter une trace
+// (la fenêtre upstream glisse — non archivé ce soir = perdu)
+async function fetchTrace(url) {
+  try {
+    return await fetch(url, { headers: { Referer: REFERER } });
+  } catch {
+    await sleep(5000);
+    return fetch(url, { headers: { Referer: REFERER } });
+  }
+}
+
 for (const hex of hexes) {
   const url = `${TRACE_BASE}/${hex.slice(-2)}/trace_full_${hex}.json`;
   try {
-    const res = await fetch(url, { headers: { Referer: REFERER } });
+    const res = await fetchTrace(url);
     if (res.status === 404) {
       empty++;
       console.log(`--   ${hex}: pas de trace (n'a pas volé)`);

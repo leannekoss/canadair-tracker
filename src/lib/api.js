@@ -73,11 +73,13 @@ export function parseTrace(json) {
   };
 }
 
-// Trace du jour (journée UTC courante) via le proxy. null si l'appareil n'a pas volé.
+// Trace du jour (fenêtre glissante ~24h) via le proxy. null si l'appareil n'a pas volé.
+// 403 = panne du proxy Referer (systémique) : on la laisse remonter, sinon toute la
+// flotte s'afficherait faussement comme « n'a pas volé ».
 export async function fetchTodayTrace(hex) {
   const h = hex.toLowerCase();
   const res = await fetch(`/api/traces?hex=${h}`);
-  if (res.status === 404 || res.status === 403) return null;
+  if (res.status === 404) return null;
   if (!res.ok) throw new Error(`trace ${h}: HTTP ${res.status}`);
   return parseTrace(await res.json());
 }

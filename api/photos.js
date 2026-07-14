@@ -7,9 +7,14 @@ export default async function handler(req, res) {
   if (!/^[0-9a-f]{6}$/.test(hex)) {
     return res.status(400).json({ error: "paramètre hex invalide" });
   }
-  const upstream = await fetch(`https://api.planespotters.net/pub/photos/hex/${hex}`, {
+  let upstream;
+  try {
+    upstream = await fetch(`https://api.planespotters.net/pub/photos/hex/${hex}`, {
     headers: { "User-Agent": "CanadairTracker/1.0 (+mailto:hcasalis@gmail.com)" },
   });
+  } catch {
+    return res.status(502).json({ error: "amont indisponible" });
+  }
   res.status(upstream.status);
   res.setHeader("Content-Type", "application/json");
   // les photos d'un appareil changent rarement → cache CDN 24 h

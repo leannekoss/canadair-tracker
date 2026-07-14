@@ -74,12 +74,14 @@ export default function TimeBar({
         LIVE
       </button>
 
-      {/* Play / pause */}
+      {/* Play / pause — verrouillé tant que la journée n'est pas entièrement chargée
+          (sinon le replay démarrerait sur une fenêtre partielle arbitraire) */}
       <button
         onClick={onPlayToggle}
-        disabled={!hasWindow}
+        disabled={!hasWindow || trailsLoading}
         title={playing ? "Pause" : "Rejouer"}
-        className="grid h-9 w-9 place-items-center rounded-sm border border-line bg-raise text-ink transition-colors hover:border-ink-faint disabled:opacity-40 md:h-8 md:w-8"
+        aria-label={playing ? "Pause" : "Rejouer la journée"}
+        className="grid h-10 w-10 place-items-center rounded-sm border border-line bg-raise text-ink transition-colors hover:border-ink-faint disabled:opacity-40 md:h-8 md:w-8"
       >
         {playing ? (
           <svg width="11" height="12" viewBox="0 0 11 12" fill="currentColor"><rect width="4" height="12" /><rect x="7" width="4" height="12" /></svg>
@@ -90,51 +92,49 @@ export default function TimeBar({
 
       {/* Horloge */}
       <div className="tnum ml-auto font-display text-lg font-bold text-ink md:ml-0 md:w-14 md:text-center">
-        {mode === "replay" && replayTime ? fmtClock(replayTime) : fmtClock(Date.now() / 1000)}
+        {trailsLoading
+          ? "…"
+          : mode === "replay" && replayTime
+            ? fmtClock(replayTime)
+            : fmtClock(Date.now() / 1000)}
       </div>
 
-      {/* Vitesses */}
-      <div className="flex gap-1">
-        {SPEEDS.map((s) => (
-          <button
-            key={s}
-            onClick={() => onSpeedChange(s)}
-            className={`rounded-sm px-2 py-1 font-display text-xs font-semibold tracking-wide transition-colors md:px-1.5 md:py-0.5 ${
-              speed === s && mode === "replay"
-                ? "bg-ink text-surface"
-                : "text-ink-faint hover:text-ink"
-            }`}
-          >
-            ×{s}
-          </button>
-        ))}
-      </div>
-
-      {/* Scrubber — pleine largeur sur mobile, inline sur desktop */}
-      <div className="order-last flex w-full items-center gap-3 md:order-none md:w-[30vw] md:min-w-56">
+      {/* Scrubber + vitesses — seconde rangée pleine largeur (mobile et desktop) */}
+      <div className="order-last flex w-full items-center gap-2 md:gap-3">
         <span className="tnum font-display text-xs font-semibold text-ink-dim">
           {hasWindow ? fmtClock(win.start) : "--:--"}
         </span>
         <input
           type="range"
           className="timebar"
+          aria-label="Position dans la journée"
           min={hasWindow ? win.start : 0}
           max={hasWindow ? win.end : 1}
           step={10}
-          value={mode === "replay" ? replayTime : hasWindow ? win.end : 0}
+          value={(mode === "replay" ? replayTime : hasWindow ? win.end : 0) ?? (hasWindow ? win.start : 0)}
           onChange={(e) => onScrub(Number(e.target.value))}
-          disabled={!hasWindow}
+          disabled={!hasWindow || trailsLoading}
         />
         <span className="tnum font-display text-xs font-semibold text-ink-dim">
           {hasWindow ? fmtClock(win.end) : "--:--"}
         </span>
+        <div className="flex gap-0.5">
+          {SPEEDS.map((s) => (
+            <button
+              key={s}
+              onClick={() => onSpeedChange(s)}
+              aria-label={`Vitesse ×${s}`}
+              className={`rounded-sm px-2 py-1.5 font-display text-xs font-semibold tracking-wide transition-colors md:py-1 ${
+                speed === s && mode === "replay"
+                  ? "bg-ink text-surface"
+                  : "text-ink-faint hover:text-ink"
+              }`}
+            >
+              ×{s}
+            </button>
+          ))}
+        </div>
       </div>
-
-      {trailsLoading && (
-        <span className="hidden font-display text-xs font-semibold tracking-wide text-ink-faint md:inline">
-          chargement des traces…
-        </span>
-      )}
     </div>
   );
 }

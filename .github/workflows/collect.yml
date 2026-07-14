@@ -1,7 +1,6 @@
-# Archivage quotidien des traces de la journée UTC courante.
-# 21h45 UTC = avant la bascule des traces tar1090 (minuit UTC) ; les bombardiers
-# ne volent plus à cette heure. Le push déclenche le redeploy Vercel → les
-# nouvelles journées apparaissent dans le sélecteur de l'app.
+# Archivage quotidien des traces (fenêtre glissante 24h → filtre journée UTC).
+# 21h45 UTC = fin de journée aérienne. Le push déclenche le redeploy Vercel →
+# la nouvelle journée apparaît dans le sélecteur de l'app.
 name: collect-traces
 
 on:
@@ -20,9 +19,13 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      # le script sort en erreur si un téléchargement échoue (échouer fort)
-      - run: node scripts/collect-traces.mjs
-      - name: Commit des archives
+      # le script sort en erreur si un téléchargement échoue (visibilité),
+      # mais les traces déjà téléchargées doivent être committées quand même —
+      # la fenêtre upstream glisse, ce qui n'est pas archivé ce soir est perdu
+      - id: collect
+        run: node scripts/collect-traces.mjs
+        continue-on-error: true
+      - name: Commit des archives (même en cas d'échec partiel)
         run: |
           git config user.name "canadair-collect[bot]"
           git config user.email "actions@users.noreply.github.com"
@@ -31,5 +34,12 @@ jobs:
             echo "Aucune nouvelle trace aujourd'hui."
           else
             git commit -m "archive: traces du $(date -u +%F)"
+            # un push d'Henri a pu arriver pendant la collecte
+            git pull --rebase origin main
             git push
           fi
+      - name: Refléter l'échec de collecte
+        if: steps.collect.outcome == 'failure'
+        run: |
+          echo "::error::Au moins un téléchargement de trace a échoué — voir le log du step collect"
+          exit 1

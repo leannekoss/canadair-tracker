@@ -32,8 +32,6 @@ export default function NewsFeed({ className = "w-72", listClassName = "max-h-[3
     };
   }, []);
 
-  if (!items.length) return null;
-
   return (
     <aside className={`pointer-events-auto flex flex-col overflow-hidden rounded-md border border-line bg-panel backdrop-blur-md ${className}`}>
       <button
@@ -46,7 +44,12 @@ export default function NewsFeed({ className = "w-72", listClassName = "max-h-[3
         </h2>
         <span className="font-display text-xs font-bold text-ink-faint">{open ? "‹" : "›"}</span>
       </button>
-      {open && (
+      {open && items.length === 0 && (
+        <p className="border-t border-line px-3 py-3 text-[12px] text-ink-faint">
+          Chargement des actualités…
+        </p>
+      )}
+      {open && items.length > 0 && (
         <ol className={`overflow-y-auto border-t border-line ${listClassName}`}>
           {items.map((n, i) => (
             <li key={i} className={i > 0 ? "border-t border-line/50" : ""}>
