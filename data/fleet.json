@@ -1,0 +1,168 @@
+{
+ "updated": "2026-07-13",
+ "source": "scan bloc hex 3B7Bxx via adsbdb.com",
+ "aircraft": [
+  {
+   "hex": "3b7b3d",
+   "reg": "F-ZBMK",
+   "type": "DH8D",
+   "model": "Dash 8-402MR",
+   "category": "dash",
+   "family": "Milan",
+   "callsign_prefix": "MILAN"
+  },
+  {
+   "hex": "3b7b3e",
+   "reg": "F-ZBMJ",
+   "type": "DH8D",
+   "model": "Dash 8-402MR",
+   "category": "dash",
+   "family": "Milan",
+   "callsign_prefix": "MILAN"
+  },
+  {
+   "hex": "3b7b3f",
+   "reg": "F-ZBMI",
+   "type": "DH8D",
+   "model": "Dash 8-402MR",
+   "category": "dash",
+   "family": "Milan",
+   "callsign_prefix": "MILAN"
+  },
+  {
+   "hex": "3b7b63",
+   "reg": "F-ZBMH",
+   "type": "DH8D",
+   "model": "Dash 8-402MR",
+   "category": "dash",
+   "family": "Milan",
+   "callsign_prefix": "MILAN"
+  },
+  {
+   "hex": "3b7b6b",
+   "reg": "F-ZBMG",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b6c",
+   "reg": "F-ZBFX",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b6d",
+   "reg": "F-ZBFN",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b6e",
+   "reg": "F-ZBFS",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b6f",
+   "reg": "F-ZBFP",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b70",
+   "reg": "F-ZBMF",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b71",
+   "reg": "F-ZBME",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b72",
+   "reg": "F-ZBEU",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b73",
+   "reg": "F-ZBEG",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b74",
+   "reg": "F-ZBFW",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b75",
+   "reg": "F-ZBFV",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b76",
+   "reg": "F-ZBFY",
+   "type": "CL4T",
+   "model": "Canadair CL-415",
+   "category": "canadair",
+   "family": "Pélican",
+   "callsign_prefix": "PELIC"
+  },
+  {
+   "hex": "3b7b85",
+   "reg": "F-ZBMD",
+   "type": "DH8D",
+   "model": "Dash 8-402MR",
+   "category": "dash",
+   "family": "Milan",
+   "callsign_prefix": "MILAN"
+  },
+  {
+   "hex": "3b7b86",
+   "reg": "F-ZBMC",
+   "type": "DH8D",
+   "model": "Dash 8-402MR",
+   "category": "dash",
+   "family": "Milan",
+   "callsign_prefix": "MILAN"
+  }
+ ]
+}

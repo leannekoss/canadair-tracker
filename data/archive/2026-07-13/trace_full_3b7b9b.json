@@ -1,0 +1,11 @@
+{"icao":"3b7b9b",
+"r":"F-ZBPP",
+"t":"EC45",
+"dbFlags":1,"desc":"Airbus Helicopters EC-145",
+"version": "readsb 3.14.1676 46c61ff-dirty",
+"timestamp": 1783924694.514,
+"trace":[ 
+[0.00,48.818639,2.367226,1925,null,null,1,-16,{"type":"mlat","flight":"DRAG75P ","baro_rate":-16,"squawk":"7015","nic":0,"rc":0,"alert":0,"spi":0},"mlat",null,null,null,null],
+[14.80,48.819424,2.381300,1850,null,null,0,-144,null,"mlat",null,null,null,null],
+[35.95,48.819881,2.394065,1700,null,null,1,-432,null,"mlat",null,null,null,null] ]
+ }

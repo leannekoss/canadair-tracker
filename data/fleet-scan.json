@@ -1,0 +1,683 @@
+{
+ "3B7B00": null,
+ "3B7B01": null,
+ "3B7B02": null,
+ "3B7B03": null,
+ "3B7B04": null,
+ "3B7B05": null,
+ "3B7B06": null,
+ "3B7B07": null,
+ "3B7B08": null,
+ "3B7B09": null,
+ "3B7B0A": null,
+ "3B7B0B": null,
+ "3B7B0C": null,
+ "3B7B0D": null,
+ "3B7B0E": null,
+ "3B7B0F": null,
+ "3B7B10": null,
+ "3B7B11": null,
+ "3B7B12": null,
+ "3B7B13": null,
+ "3B7B14": null,
+ "3B7B15": null,
+ "3B7B16": null,
+ "3B7B17": null,
+ "3B7B18": null,
+ "3B7B19": null,
+ "3B7B1A": null,
+ "3B7B1B": null,
+ "3B7B1C": null,
+ "3B7B1D": null,
+ "3B7B1E": null,
+ "3B7B1F": null,
+ "3B7B20": {
+  "reg": "F-ZBGQ",
+  "type": "B350",
+  "type_long": "King Air B350",
+  "owner": "French Customs"
+ },
+ "3B7B21": {
+  "reg": "F-ZBGP",
+  "type": "B350",
+  "type_long": "King Air B350",
+  "owner": "French Customs"
+ },
+ "3B7B22": {
+  "reg": "F-ZBGO",
+  "type": "B350",
+  "type_long": "King Air B350",
+  "owner": "French Customs"
+ },
+ "3B7B23": {
+  "reg": "F-ZBGN",
+  "type": "B350",
+  "type_long": "King Air B350",
+  "owner": "French Customs"
+ },
+ "3B7B24": null,
+ "3B7B25": null,
+ "3B7B26": null,
+ "3B7B27": null,
+ "3B7B28": null,
+ "3B7B29": null,
+ "3B7B2A": null,
+ "3B7B2B": null,
+ "3B7B2C": null,
+ "3B7B2D": null,
+ "3B7B2E": null,
+ "3B7B2F": null,
+ "3B7B30": null,
+ "3B7B31": null,
+ "3B7B32": null,
+ "3B7B33": null,
+ "3B7B34": null,
+ "3B7B35": null,
+ "3B7B36": null,
+ "3B7B37": null,
+ "3B7B38": null,
+ "3B7B39": null,
+ "3B7B3A": null,
+ "3B7B3B": {
+  "reg": "F-ZBQN",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 D-3 (H145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B3C": {
+  "reg": "F-ZBQM",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 D-3 (H145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B3D": {
+  "reg": "F-ZBMK",
+  "type": "DH8D",
+  "type_long": "DHC-8 402 NG",
+  "owner": "Securite Civile"
+ },
+ "3B7B3E": {
+  "reg": "F-ZBMJ",
+  "type": "DH8D",
+  "type_long": "DHC-8 402 NG",
+  "owner": "Securite Civile"
+ },
+ "3B7B3F": {
+  "reg": "F-ZBMI",
+  "type": "DH8D",
+  "type_long": "DHC-8 402 NG",
+  "owner": "Securite Civile"
+ },
+ "3B7B40": {
+  "reg": "F-ZBGL",
+  "type": "B350",
+  "type_long": "King Air B350",
+  "owner": "French Customs"
+ },
+ "3B7B41": {
+  "reg": "F-ZBGM",
+  "type": "B350",
+  "type_long": "King Air B350",
+  "owner": "French Customs"
+ },
+ "3B7B42": null,
+ "3B7B43": {
+  "reg": "F-ZBEK",
+  "type": "AS55",
+  "type_long": "Twin Squirrel AS.355 F1",
+  "owner": "French Customs"
+ },
+ "3B7B44": null,
+ "3B7B45": null,
+ "3B7B46": null,
+ "3B7B47": {
+  "reg": "F-ZBAD",
+  "type": "AS55",
+  "type_long": "Twin Squirrel AS.355 F2",
+  "owner": "French Customs"
+ },
+ "3B7B48": null,
+ "3B7B49": {
+  "reg": "F-ZBQL",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B4A": {
+  "reg": "F-ZBQK",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B4B": {
+  "reg": "F-ZBQJ",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B4C": null,
+ "3B7B4D": null,
+ "3B7B4E": null,
+ "3B7B4F": {
+  "reg": "F-ZBCE",
+  "type": "F406",
+  "type_long": "F406 Caravan II",
+  "owner": "French Customs"
+ },
+ "3B7B50": {
+  "reg": "F-ZBQI",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B51": {
+  "reg": "F-ZBQH",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B52": null,
+ "3B7B53": null,
+ "3B7B54": {
+  "reg": "F-ZBCG",
+  "type": "F406",
+  "type_long": "F406 Caravan II",
+  "owner": "French Customs"
+ },
+ "3B7B55": {
+  "reg": "F-ZBEP",
+  "type": "F406",
+  "type_long": "F406 Caravan II",
+  "owner": "French Customs"
+ },
+ "3B7B56": {
+  "reg": "F-ZBGJ",
+  "type": "EC35",
+  "type_long": "EC135 T2+",
+  "owner": "French Customs"
+ },
+ "3B7B57": {
+  "reg": "F-ZBGI",
+  "type": "EC35",
+  "type_long": "EC135 T2+",
+  "owner": "French Customs"
+ },
+ "3B7B58": {
+  "reg": "F-ZBGH",
+  "type": "EC35",
+  "type_long": "EC135 T2+",
+  "owner": "French Customs"
+ },
+ "3B7B59": {
+  "reg": "F-ZBGG",
+  "type": "EC35",
+  "type_long": "EC135 T2+",
+  "owner": "French Customs"
+ },
+ "3B7B5A": {
+  "reg": "F-ZBGF",
+  "type": "EC35",
+  "type_long": "EC135 T2+",
+  "owner": "French Customs"
+ },
+ "3B7B5B": {
+  "reg": "F-ZBET",
+  "type": "S2P",
+  "type_long": "Firecat Turbo",
+  "owner": "Securite Civile"
+ },
+ "3B7B5C": {
+  "reg": "F-ZBAP",
+  "type": "S2P",
+  "type_long": "Firecat Turbo",
+  "owner": "Securite Civile"
+ },
+ "3B7B5D": {
+  "reg": "F-ZBEW",
+  "type": "S2P",
+  "type_long": "Firecat Turbo",
+  "owner": "Securite Civile"
+ },
+ "3B7B5E": {
+  "reg": "F-ZBEY",
+  "type": "S2P",
+  "type_long": "Firecat Turbo",
+  "owner": "Securite Civile"
+ },
+ "3B7B5F": {
+  "reg": "F-ZBAZ",
+  "type": "S2P",
+  "type_long": "Firecat Turbo",
+  "owner": "Securite Civile"
+ },
+ "3B7B60": null,
+ "3B7B61": null,
+ "3B7B62": null,
+ "3B7B63": {
+  "reg": "F-ZBMH",
+  "type": "DH8D",
+  "type_long": "DHC-8 402 NG",
+  "owner": "Securite Civile"
+ },
+ "3B7B64": {
+  "reg": "F-ZBMB",
+  "type": "BE20",
+  "type_long": "King Air B200",
+  "owner": "Securite Civile"
+ },
+ "3B7B65": {
+  "reg": "F-ZBFJ",
+  "type": "BE20",
+  "type_long": "King Air B200",
+  "owner": "Securite Civile"
+ },
+ "3B7B66": {
+  "reg": "F-ZBFK",
+  "type": "BE20",
+  "type_long": "King Air B200",
+  "owner": "Securite Civile"
+ },
+ "3B7B67": {
+  "reg": "F-ZBMA",
+  "type": "S2P",
+  "type_long": "Firecat Turbo",
+  "owner": "Securite Civile"
+ },
+ "3B7B68": {
+  "reg": "F-ZBCZ",
+  "type": "S2P",
+  "type_long": "Firecat Turbo",
+  "owner": "Securite Civile"
+ },
+ "3B7B69": null,
+ "3B7B6A": {
+  "reg": "F-ZBEH",
+  "type": "S2P",
+  "type_long": "Firecat Turbo",
+  "owner": "Securite Civile"
+ },
+ "3B7B6B": {
+  "reg": "F-ZBMG",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B6C": {
+  "reg": "F-ZBFX",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B6D": {
+  "reg": "F-ZBFN",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B6E": {
+  "reg": "F-ZBFS",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B6F": {
+  "reg": "F-ZBFP",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B70": {
+  "reg": "F-ZBMF",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B71": {
+  "reg": "F-ZBME",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B72": {
+  "reg": "F-ZBEU",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B73": {
+  "reg": "F-ZBEG",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B74": {
+  "reg": "F-ZBFW",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B75": {
+  "reg": "F-ZBFV",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B76": {
+  "reg": "F-ZBFY",
+  "type": "CL4T",
+  "type_long": "CL-415 T",
+  "owner": "Securite Civile"
+ },
+ "3B7B77": null,
+ "3B7B78": null,
+ "3B7B79": null,
+ "3B7B7A": null,
+ "3B7B7B": null,
+ "3B7B7C": null,
+ "3B7B7D": null,
+ "3B7B7E": null,
+ "3B7B7F": null,
+ "3B7B80": {
+  "reg": "F-ZBGK",
+  "type": "B350",
+  "type_long": "King Air B350",
+  "owner": "French Customs"
+ },
+ "3B7B81": null,
+ "3B7B82": null,
+ "3B7B83": null,
+ "3B7B84": null,
+ "3B7B85": {
+  "reg": "F-ZBMD",
+  "type": "DH8D",
+  "type_long": "DHC-8 402",
+  "owner": "Securite Civile"
+ },
+ "3B7B86": {
+  "reg": "F-ZBMC",
+  "type": "DH8D",
+  "type_long": "DHC-8 402",
+  "owner": "Securite Civile"
+ },
+ "3B7B87": null,
+ "3B7B88": null,
+ "3B7B89": {
+  "reg": "F-ZBGD",
+  "type": "F406",
+  "type_long": "F406 Caravan II",
+  "owner": "French Customs"
+ },
+ "3B7B8A": {
+  "reg": "F-ZBCJ",
+  "type": "F406",
+  "type_long": "F406 Caravan II",
+  "owner": "French Customs"
+ },
+ "3B7B8B": {
+  "reg": "F-ZBQF",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B8C": {
+  "reg": "F-ZBQE",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B8D": {
+  "reg": "F-ZBQD",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B8E": {
+  "reg": "F-ZBQC",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B8F": null,
+ "3B7B90": {
+  "reg": "F-ZBQA",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B91": null,
+ "3B7B92": {
+  "reg": "F-ZBPY",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B93": {
+  "reg": "F-ZBPX",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B94": {
+  "reg": "F-ZBPW",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B95": {
+  "reg": "F-ZBPV",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B96": {
+  "reg": "F-ZBPU",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B97": {
+  "reg": "F-ZBPT",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B98": {
+  "reg": "F-ZBPS",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B99": null,
+ "3B7B9A": {
+  "reg": "F-ZBPQ",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B9B": {
+  "reg": "F-ZBPP",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B9C": {
+  "reg": "F-ZBPO",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B9D": {
+  "reg": "F-ZBPN",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B9E": {
+  "reg": "F-ZBPM",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7B9F": {
+  "reg": "F-ZBPL",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7BA0": {
+  "reg": "F-ZBPK",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7BA1": {
+  "reg": "F-ZBPJ",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7BA2": {
+  "reg": "F-ZBPI",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7BA3": {
+  "reg": "F-ZBPH",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7BA4": {
+  "reg": "F-ZBPG",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7BA5": {
+  "reg": "F-ZBPF",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7BA6": {
+  "reg": "F-ZBPE",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7BA7": {
+  "reg": "F-ZBPD",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7BA8": null,
+ "3B7BA9": null,
+ "3B7BAA": {
+  "reg": "F-ZBPA",
+  "type": "EC45",
+  "type_long": "MBB-BK 117 C-2 (EC145)",
+  "owner": "Securite Civile"
+ },
+ "3B7BAB": null,
+ "3B7BAC": null,
+ "3B7BAD": null,
+ "3B7BAE": null,
+ "3B7BAF": null,
+ "3B7BB0": null,
+ "3B7BB1": null,
+ "3B7BB2": null,
+ "3B7BB3": null,
+ "3B7BB4": null,
+ "3B7BB5": null,
+ "3B7BB6": null,
+ "3B7BB7": null,
+ "3B7BB8": null,
+ "3B7BB9": null,
+ "3B7BBA": null,
+ "3B7BBB": null,
+ "3B7BBC": null,
+ "3B7BBD": null,
+ "3B7BBE": null,
+ "3B7BBF": null,
+ "3B7BC0": null,
+ "3B7BC1": null,
+ "3B7BC2": null,
+ "3B7BC3": null,
+ "3B7BC4": null,
+ "3B7BC5": null,
+ "3B7BC6": null,
+ "3B7BC7": null,
+ "3B7BC8": null,
+ "3B7BC9": null,
+ "3B7BCA": null,
+ "3B7BCB": null,
+ "3B7BCC": null,
+ "3B7BCD": null,
+ "3B7BCE": null,
+ "3B7BCF": null,
+ "3B7BD0": null,
+ "3B7BD1": null,
+ "3B7BD2": null,
+ "3B7BD3": null,
+ "3B7BD4": null,
+ "3B7BD5": null,
+ "3B7BD6": null,
+ "3B7BD7": null,
+ "3B7BD8": null,
+ "3B7BD9": null,
+ "3B7BDA": null,
+ "3B7BDB": null,
+ "3B7BDC": null,
+ "3B7BDD": null,
+ "3B7BDE": null,
+ "3B7BDF": null,
+ "3B7BE0": null,
+ "3B7BE1": null,
+ "3B7BE2": null,
+ "3B7BE3": null,
+ "3B7BE4": null,
+ "3B7BE5": {
+  "reg": "6016",
+  "type": "TIGR",
+  "type_long": "Tiger EC665 HAD",
+  "owner": "French Army"
+ },
+ "3B7BE6": null,
+ "3B7BE7": null,
+ "3B7BE8": null,
+ "3B7BE9": null,
+ "3B7BEA": null,
+ "3B7BEB": null,
+ "3B7BEC": null,
+ "3B7BED": null,
+ "3B7BEE": null,
+ "3B7BEF": null,
+ "3B7BF0": null,
+ "3B7BF1": null,
+ "3B7BF2": null,
+ "3B7BF3": null,
+ "3B7BF4": null,
+ "3B7BF5": null,
+ "3B7BF6": null,
+ "3B7BF7": null,
+ "3B7BF8": null,
+ "3B7BF9": {
+  "reg": "F-ZBGA",
+  "type": "F406",
+  "type_long": "F406 Caravan II",
+  "owner": "French Customs"
+ },
+ "3B7BFA": null,
+ "3B7BFB": null,
+ "3B7BFC": null,
+ "3B7BFD": null,
+ "3B7BFE": null,
+ "3B7BFF": {
+  "reg": "106",
+  "type": "TBM7",
+  "type_long": "TBM-700",
+  "owner": "Centre d'Essais en Vol"
+ }
+}

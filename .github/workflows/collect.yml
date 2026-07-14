@@ -1,0 +1,35 @@
+# Archivage quotidien des traces de la journée UTC courante.
+# 21h45 UTC = avant la bascule des traces tar1090 (minuit UTC) ; les bombardiers
+# ne volent plus à cette heure. Le push déclenche le redeploy Vercel → les
+# nouvelles journées apparaissent dans le sélecteur de l'app.
+name: collect-traces
+
+on:
+  schedule:
+    - cron: "45 21 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      # le script sort en erreur si un téléchargement échoue (échouer fort)
+      - run: node scripts/collect-traces.mjs
+      - name: Commit des archives
+        run: |
+          git config user.name "canadair-collect[bot]"
+          git config user.email "actions@users.noreply.github.com"
+          git add data/archive
+          if git diff --cached --quiet; then
+            echo "Aucune nouvelle trace aujourd'hui."
+          else
+            git commit -m "archive: traces du $(date -u +%F)"
+            git push
+          fi
