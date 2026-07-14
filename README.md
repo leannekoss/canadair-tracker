@@ -39,15 +39,17 @@ F-Z* et les AT-802 au-dessus de la France sont **auto-découverts** par le poll 
 
 ## Archivage quotidien
 
-`scripts/collect-traces.mjs` télécharge chaque soir les traces de la journée UTC
-courante → `data/archive/YYYY-MM-DD/` + met à jour `index.json` (sélecteur UI).
+`scripts/collect-traces.mjs` télécharge chaque soir les traces, **filtre les points
+sur la journée UTC étiquetée** et écrit `data/archive/YYYY-MM-DD/` + `index.json`.
 
-- Job launchd : `~/Library/LaunchAgents/com.henri.canadair-collect.plist` (23 h 30)
+- GitHub Action `collect-traces` (cron 21 h 45 UTC) : collecte + commit + push
+  → le push redéploie Vercel, la journée apparaît dans le sélecteur
 - Manuel : `node scripts/collect-traces.mjs` (ou `--hex a,b,c` / `--date YYYY-MM-DD`)
-- Log : `data/collect.log`
 
-⚠️ Les traces tar1090 couvrent la **journée UTC** et basculent à minuit UTC
-(02 h 00 Paris l'été) — d'où le passage du collecteur avant.
+⚠️ `trace_full` est une **fenêtre glissante ~24 h** (pas la journée UTC) : sans le
+filtre du collecteur, une collecte matinale archiverait les vols de la veille sous
+la date du jour. Le cron tourne en fin de journée aérienne pour capter la journée
+complète.
 
 ## Stack
 

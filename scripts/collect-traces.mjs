@@ -44,11 +44,26 @@ for (const hex of hexes) {
       empty++;
       console.log(`--   ${hex}: pas de trace (n'a pas volé)`);
     } else if (res.ok) {
-      const body = await res.text();
-      const trace = JSON.parse(body); // valide le JSON avant d'écrire
-      writeFileSync(join(outDir, `trace_full_${hex}.json`), body);
-      saved++;
-      console.log(`OK   ${hex} (${trace.r ?? "?"}): ${trace.trace?.length ?? 0} points`);
+      const trace = JSON.parse(await res.text());
+      // trace_full = fenêtre GLISSANTE ~24h (pas la journée UTC) : on ne garde que
+      // les points de la journée étiquetée, sinon l'archive contient les vols de la veille
+      const dayStart = Date.parse(`${date}T00:00:00Z`) / 1000;
+      const dayEnd = dayStart + 86400;
+      const kept = (trace.trace ?? []).filter((p) => {
+        const t = trace.timestamp + p[0];
+        return t >= dayStart && t < dayEnd;
+      });
+      if (kept.length < 2) {
+        empty++;
+        console.log(`--   ${hex}: aucun point sur la journée ${date}`);
+      } else {
+        const base = trace.timestamp + kept[0][0];
+        const rebased = kept.map((p) => [p[0] - (base - trace.timestamp), ...p.slice(1)]);
+        const out = { ...trace, timestamp: base, trace: rebased };
+        writeFileSync(join(outDir, `trace_full_${hex}.json`), JSON.stringify(out));
+        saved++;
+        console.log(`OK   ${hex} (${trace.r ?? "?"}): ${kept.length} points (journée ${date})`);
+      }
     } else {
       failed++;
       console.error(`FAIL ${hex}: HTTP ${res.status}`);
@@ -71,7 +86,8 @@ const index = readdirSync(archiveRoot, { withFileTypes: true })
     hexes: readdirSync(join(archiveRoot, e.name))
       .filter((f) => f.startsWith("trace_full_"))
       .map((f) => f.replace("trace_full_", "").replace(".json", "")),
-  }));
+  }))
+  .filter((e) => e.hexes.length > 0); // pas de journée vide dans le sélecteur
 writeFileSync(join(archiveRoot, "index.json"), JSON.stringify(index, null, 1));
 
 console.log(`\n${date} → ${outDir}`);
