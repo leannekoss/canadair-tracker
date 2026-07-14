@@ -7,6 +7,7 @@ import NewsFeed from "./components/NewsFeed.jsx";
 import { useFleet } from "./lib/useFleet.js";
 import { positionAt, timeWindow } from "./lib/replay.js";
 import { fetchFires, namedFireClusters } from "./lib/fires.js";
+import { analyzeMission } from "./lib/mission.js";
 import { FRANCE_VIEW } from "./theme.js";
 
 const REPLAY_TICK_MS = 50;
@@ -48,6 +49,12 @@ export default function App() {
   );
   const win = useMemo(() => timeWindow(trails), [trails]);
   const t0 = win?.start ?? null;
+
+  // Analyse de mission de l'appareil sélectionné (A-R par foyer, écopages, posés)
+  const mission = useMemo(() => {
+    const trail = selectedHex ? trails[selectedHex] : null;
+    return trail ? analyzeMission(trail, foyers) : null;
+  }, [selectedHex, trails, foyers]);
 
   // Horloge : re-render léger toutes les secondes
   useEffect(() => {
@@ -166,6 +173,7 @@ export default function App() {
         showFires={showFires}
         hiddenCats={hiddenCats}
         satellite={satellite}
+        mission={mission}
         selectedHex={selectedHex}
         onSelect={setSelectedHex}
         onMapReady={(m) => (mapRef.current = m)}
@@ -278,6 +286,7 @@ export default function App() {
             meta={fleetByHex[selectedHex]}
             live={liveMap[selectedHex]}
             trail={trails[selectedHex]}
+            mission={mission}
             mode={mode}
             replayTime={replayTime ?? 0}
             onClose={() => setSelectedHex(null)}

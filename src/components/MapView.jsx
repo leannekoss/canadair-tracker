@@ -34,6 +34,7 @@ export default function MapView({
   showFires,
   hiddenCats,
   satellite,
+  mission,
   selectedHex,
   onSelect,
   onMapReady,
@@ -182,6 +183,22 @@ export default function MapView({
           getColor: [selectedHex],
         },
       }),
+      // Points d'écopage estimés de l'appareil sélectionné (anneaux « eau »)
+      selectedHex &&
+        mission?.scoopClusters?.length > 0 &&
+        new ScatterplotLayer({
+          id: "scoops",
+          data: mission.scoopClusters,
+          getPosition: (d) => [d.lon, d.lat],
+          getRadius: 600,
+          radiusMinPixels: 6,
+          radiusMaxPixels: 15,
+          stroked: true,
+          filled: false,
+          getLineColor: [120, 190, 235, 230],
+          getLineWidth: 180,
+          lineWidthMinPixels: 2,
+        }),
       // Anneau de sélection
       selectedHex &&
         new ScatterplotLayer({
@@ -238,7 +255,7 @@ export default function MapView({
     ].filter(Boolean);
 
     overlay.setProps({ layers });
-  }, [fleetByHex, trails, liveMap, mode, replayTime, t0, fires, showFires, hiddenCats, selectedHex, onSelect]);
+  }, [fleetByHex, trails, liveMap, mode, replayTime, t0, fires, showFires, hiddenCats, mission, selectedHex, onSelect]);
 
   // h-full explicite : maplibre-gl.css force position:relative sur ce div (classe
   // maplibregl-map), ce qui neutraliserait un dimensionnement par inset-0

@@ -1,7 +1,9 @@
-// Fiche appareil : photo planespotters, identité, données de vol, activité du jour.
+// Fiche appareil : photo planespotters, identité, données de vol, activité du jour,
+// mission estimée (rotations par foyer, lieux d'écopage, posés intermédiaires).
 
 import { useEffect, useState } from "react";
 import { flightSegments, positionAt, trailDistanceKm } from "../lib/replay";
+import { communeName } from "../lib/fires";
 import { CATEGORY_HEX } from "../theme";
 
 const photoCache = new Map();
@@ -49,9 +51,30 @@ function Datum({ label, value, unit }) {
   );
 }
 
-export default function AircraftCard({ meta, live, trail, mode, replayTime, onClose }) {
+// Nomme les lieux d'écopage / posés (async, par commune)
+function usePlaceNames(points) {
+  const [names, setNames] = useState([]);
+  useEffect(() => {
+    if (!points?.length) {
+      setNames([]);
+      return;
+    }
+    let alive = true;
+    Promise.all(points.slice(0, 4).map((p) => communeName(p.lat, p.lon))).then(
+      (res) => alive && setNames(res.filter(Boolean))
+    );
+    return () => {
+      alive = false;
+    };
+  }, [points]);
+  return names;
+}
+
+export default function AircraftCard({ meta, live, trail, mission, mode, replayTime, onClose }) {
   const photo = usePhoto(meta.hex);
   const color = CATEGORY_HEX[meta.category] ?? "#94a1b5";
+  const scoopPlaces = usePlaceNames(mission?.scoopClusters);
+  const stopPlaces = usePlaceNames(mission?.stops);
 
   // Données affichées : replay = position interpolée, live = dernier message
   const pos = mode === "replay" && trail ? positionAt(trail, replayTime) : live;
@@ -98,12 +121,53 @@ export default function AircraftCard({ meta, live, trail, mode, replayTime, onCl
           <Datum label="Vitesse" value={flying && pos.gs != null ? Math.round(pos.gs) : null} unit="kt" />
           <Datum label="Cap" value={flying && pos.track != null ? `${Math.round(pos.track)}°` : null} />
           <Datum label="Distance jour" value={distKm != null && distKm > 1 ? Math.round(distKm).toLocaleString("fr-FR") : null} unit="km" />
-          <Datum label="Rotations" value={segments.length || null} />
+          <Datum label="Vols" value={segments.length || null} />
           <Datum
             label="Activité"
             value={trail ? `${fmtTime(trail.start)}–${fmtTime(trail.end)}` : null}
           />
         </div>
+
+        {/* Mission estimée depuis la trace (heuristiques ADS-B) */}
+        {mission && (mission.foyerStats.length > 0 || mission.scoopClusters.length > 0 || mission.stops.length > 0) && (
+          <section className="mt-3 border-t border-line pt-2.5">
+            <h4 className="font-display text-[10px] font-semibold uppercase tracking-[0.14em] text-ink-faint">
+              Mission du jour · estimations
+            </h4>
+            <ul className="mt-1.5 space-y-1 text-[13px] leading-snug text-ink">
+              {mission.foyerStats.map((f) => (
+                <li key={f.name}>
+                  <span className="mr-1 text-fire">●</span>
+                  {f.name} : <span className="tnum font-semibold">{f.passes}</span> passage{f.passes > 1 ? "s" : ""}
+                  {f.lowPasses > 0 && (
+                    <span className="text-ink-dim"> dont {f.lowPasses} bas (largages probables)</span>
+                  )}
+                </li>
+              ))}
+              {mission.scoopClusters.length > 0 && (
+                <li>
+                  <span className="mr-1 text-airtractor">◍</span>
+                  <span className="tnum font-semibold">
+                    {mission.scoopClusters.reduce((s, c) => s + c.count, 0)}
+                  </span>{" "}
+                  écopage{mission.scoopClusters.reduce((s, c) => s + c.count, 0) > 1 ? "s" : ""}
+                  {scoopPlaces.length > 0 && (
+                    <span className="text-ink-dim"> · {scoopPlaces.join(", ")}</span>
+                  )}
+                </li>
+              )}
+              {mission.stops.length > 0 && (
+                <li>
+                  <span className="mr-1 text-ink-faint">■</span>
+                  {mission.stops.length} posé{mission.stops.length > 1 ? "s" : ""} intermédiaire{mission.stops.length > 1 ? "s" : ""}
+                  {stopPlaces.length > 0 && (
+                    <span className="text-ink-dim"> · {stopPlaces.join(", ")}</span>
+                  )}
+                </li>
+              )}
+            </ul>
+          </section>
+        )}
       </div>
     </article>
   );

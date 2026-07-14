@@ -41,6 +41,9 @@ export function clusterFires(fires, cell = 0.15, top = 8) {
 // NB : pas BAN /reverse — celle-ci cherche des ADRESSES proches et renvoie []
 // en pleine forêt, là où naissent précisément les feux.
 const geoCache = new Map();
+export async function communeName(lat, lon) {
+  return reverseName(lat, lon);
+}
 async function reverseName(lat, lon) {
   const key = `${lat.toFixed(2)},${lon.toFixed(2)}`;
   if (geoCache.has(key)) return geoCache.get(key);
