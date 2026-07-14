@@ -48,6 +48,18 @@ export default function MapView({
       attributionControl: { compact: true },
     });
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
+    // Labels en français : le style CARTO affiche l'anglais par défaut ("BRITTANY",
+    // "GREATER EAST"). On rebase chaque couche texte sur name:fr, repli nom local.
+    map.on("style.load", () => {
+      const frName = ["coalesce", ["get", "name:fr"], ["get", "name_fr"], ["get", "name"]];
+      for (const layer of map.getStyle().layers) {
+        if (layer.type !== "symbol") continue;
+        const tf = map.getLayoutProperty(layer.id, "text-field");
+        if (tf && JSON.stringify(tf).includes("name")) {
+          map.setLayoutProperty(layer.id, "text-field", frName);
+        }
+      }
+    });
     const overlay = new MapboxOverlay({ interleaved: false, layers: [] });
     map.addControl(overlay);
     mapRef.current = map;

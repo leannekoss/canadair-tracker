@@ -5,14 +5,19 @@ Suivi temps réel + replay des bombardiers d'eau de la Sécurité Civile frança
 overlay des feux actifs (détections satellites VIIRS). Contexte : incendies de
 l'été 2026, notamment Fontainebleau.
 
-## Lancer
+**Production : https://canadair-tracker.vercel.app** (repo GitHub public
+`leannekoss/canadair-tracker`, deploy auto sur push `main`)
+
+## Lancer en local
 
 ```bash
 npm run dev        # → http://localhost:5173
 ```
 
-Aucune clé API nécessaire. Le proxy Vite (vite.config.js) gère les trois
-endpoints qui exigent des headers spécifiques.
+Aucune clé API nécessaire. En dev, le proxy Vite (vite.config.js) gère les
+endpoints à headers spécifiques ; en prod ce sont les fonctions `api/traces.js`
+et `api/photos.js` (chemin fixe + `?hex=` — le routing catch-all `[...path]`
+de Vercel ne matche qu'un segment hors Next.js).
 
 ## Utilisation
 
