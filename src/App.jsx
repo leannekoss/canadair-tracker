@@ -4,10 +4,12 @@ import TimeBar from "./components/TimeBar.jsx";
 import FleetStrips from "./components/FleetStrips.jsx";
 import AircraftCard from "./components/AircraftCard.jsx";
 import NewsFeed from "./components/NewsFeed.jsx";
+import DayRecap from "./components/DayRecap.jsx";
 import { useFleet } from "./lib/useFleet.js";
 import { positionAt, timeWindow } from "./lib/replay.js";
 import { ACTIVE_AGE_HOURS, fetchFires, namedFireClusters } from "./lib/fires.js";
 import { analyzeMission } from "./lib/mission.js";
+import { buildRecap } from "./lib/recap.js";
 import { FRANCE_VIEW } from "./theme.js";
 
 const REPLAY_TICK_MS = 50;
@@ -46,6 +48,7 @@ export default function App() {
   const [mobilePanel, setMobilePanel] = useState(null); // mobile : 'fleet' | 'news' | null
   const [foyers, setFoyers] = useState([]);
   const [satellite, setSatellite] = useState(false);
+  const [showRecap, setShowRecap] = useState(false);
   const [hiddenCats, setHiddenCats] = useState(() => new Set());
 
   const toggleCategory = useCallback((cat) => {
@@ -72,6 +75,16 @@ export default function App() {
     const trail = selectedHex ? trails[selectedHex] : null;
     return trail ? analyzeMission(trail, foyers) : null;
   }, [selectedHex, trails, foyers]);
+
+  // Bilan de la journée (calculé seulement quand le poster est ouvert)
+  const recap = useMemo(
+    () => (showRecap ? buildRecap(trails, fleetByHex, foyers) : null),
+    [showRecap, trails, fleetByHex, foyers]
+  );
+  const dateLabel = useMemo(() => {
+    const d = selectedDate === "today" ? new Date() : new Date(selectedDate + "T12:00:00Z");
+    return d.toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
+  }, [selectedDate]);
 
   // Horloge : re-render léger toutes les secondes
   useEffect(() => {
@@ -293,6 +306,12 @@ export default function App() {
         >
           France
         </button>
+        <button
+          onClick={() => setShowRecap(true)}
+          className="shrink-0 rounded-md border border-line bg-panel px-3 py-2 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink md:py-1.5"
+        >
+          Bilan du jour
+        </button>
         <a
           href="/methodo.html"
           title="Sources & méthodologie"
@@ -404,6 +423,19 @@ export default function App() {
           par Henri Casalis
         </a>
       </footer>
+
+      {/* Bilan de la journée (poster exportable) */}
+      {showRecap && (
+        <DayRecap
+          recap={recap}
+          trails={trails}
+          fleetByHex={fleetByHex}
+          foyers={foyers}
+          dateLabel={dateLabel}
+          isToday={selectedDate === "today"}
+          onClose={() => setShowRecap(false)}
+        />
+      )}
 
       {/* Barre temporelle */}
       <div className="absolute inset-x-2 bottom-2 md:inset-x-auto md:bottom-4 md:left-1/2 md:-translate-x-1/2">
