@@ -78,9 +78,20 @@ function Strip({ a, status, selected, onSelect }) {
 
 export default function FleetStrips({
   fleet, liveMap, trails, mode, replayTime, selectedHex, onSelect,
-  hiddenCats, onToggleCategory, className = "max-h-[62vh] w-64",
+  className = "max-h-[62vh] w-64",
 }) {
   const [kindFilter, setKindFilter] = useState("all");
+  // Les longues listes restent fermées au chargement. Ce repli est purement
+  // visuel : il ne masque jamais les appareils sur la carte.
+  const [expandedCats, setExpandedCats] = useState(() => new Set());
+  const toggleExpanded = (category) => {
+    setExpandedCats((previous) => {
+      const next = new Set(previous);
+      if (next.has(category)) next.delete(category);
+      else next.add(category);
+      return next;
+    });
+  };
   const ctx = { mode, replayTime, liveMap, trails };
   const planeCount = fleet.filter((a) => a.category !== "dragon").length;
   const helicopterCount = fleet.filter((a) => a.category === "dragon").length;
@@ -111,7 +122,7 @@ export default function FleetStrips({
         if (kindFilter === "helicopters" && g.kind !== "HÉLICOPTÈRES") return null;
         const members = fleet.filter((a) => a.category === g.category);
         if (!members.length) return null;
-        const hidden = hiddenCats?.has(g.category);
+        const expanded = expandedCats.has(g.category);
         const statuses = members.map((a) => [a, stripStatus(a, ctx)]);
         const airborne = statuses.filter(([, s]) => s.flying).length;
         const showKind = previousKind !== g.kind;
@@ -124,21 +135,22 @@ export default function FleetStrips({
                 {g.kind}
               </div>
             )}
-            {/* cliquer l'en-tête replie le groupe ET masque la famille sur la carte */}
+            {/* Le repli de liste est indépendant de la visibilité sur la carte. */}
             <button
-              onClick={() => onToggleCategory?.(g.category)}
-              title={hidden ? "Afficher sur la carte" : "Masquer sur la carte"}
-              className={`flex min-h-10 w-full items-center justify-between border-b border-line bg-panel-solid px-3 py-2 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink ${hidden ? "opacity-50" : ""}`}
+              onClick={() => toggleExpanded(g.category)}
+              aria-expanded={expanded}
+              title={expanded ? "Replier la liste" : "Déplier la liste"}
+              className="flex min-h-11 w-full items-center justify-between border-b border-line bg-panel-solid px-3 py-2 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink"
             >
               <h2 className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-dim">
-                <span className="mr-1 inline-block w-2 text-ink-faint">{hidden ? "▸" : "▾"}</span>
+                <span className="mr-1 inline-block w-2 text-ink-faint">{expanded ? "▾" : "▸"}</span>
                 {g.title}
               </h2>
               <span className="tnum font-display text-[11px] font-semibold text-ink-faint">
-                {hidden ? "masqué" : airborne > 0 ? `${airborne} en vol` : members.length}
+                {airborne > 0 ? `${airborne} en vol` : members.length}
               </span>
             </button>
-            {!hidden &&
+            {expanded &&
               statuses.map(([a, s]) => (
                 <Strip key={a.hex} a={a} status={s} selected={a.hex === selectedHex} onSelect={onSelect} />
               ))}

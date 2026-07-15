@@ -49,16 +49,6 @@ export default function App() {
   const [foyers, setFoyers] = useState([]);
   const [satellite, setSatellite] = useState(false);
   const [showRecap, setShowRecap] = useState(false);
-  const [hiddenCats, setHiddenCats] = useState(() => new Set());
-
-  const toggleCategory = useCallback((cat) => {
-    setHiddenCats((prev) => {
-      const next = new Set(prev);
-      if (next.has(cat)) next.delete(cat);
-      else next.add(cat);
-      return next;
-    });
-  }, []);
   const [fires, setFires] = useState([]);
   const [, setClockTick] = useState(0); // re-render 1s : horloge + avance du fade live
   const mapRef = useRef(null);
@@ -220,7 +210,6 @@ export default function App() {
         t0={t0}
         fires={fires}
         showFires={showFires}
-        hiddenCats={hiddenCats}
         satellite={satellite}
         mission={mission}
         selectedHex={selectedHex}
@@ -353,8 +342,6 @@ export default function App() {
             replayTime={replayTime ?? 0}
             selectedHex={selectedHex}
             onSelect={(hex) => setSelectedHex((h) => (h === hex ? null : hex))}
-            hiddenCats={hiddenCats}
-            onToggleCategory={toggleCategory}
           />
         )}
         <button
@@ -379,8 +366,6 @@ export default function App() {
               setSelectedHex((h) => (h === hex ? null : hex));
               setMobilePanel(null); // referme pour voir la carte + la fiche
             }}
-            hiddenCats={hiddenCats}
-            onToggleCategory={toggleCategory}
             className="h-full w-full max-h-none"
           />
         </div>
