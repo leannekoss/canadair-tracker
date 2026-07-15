@@ -1,7 +1,7 @@
 // Panneau flotte façon « flight progress strips » du contrôle aérien.
 // Un strip par appareil, groupés par famille, statut temps réel ou à l'instant du replay.
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { positionAt } from "../lib/replay";
 import { aircraftKindLabel, CATEGORY_HEX } from "../theme";
 
@@ -77,9 +77,12 @@ function Strip({ a, status, selected, onSelect }) {
 }
 
 export default function FleetStrips({
-  fleet, liveMap, trails, mode, replayTime, selectedHex, onSelect,
+  fleet, liveMap, trails, mode, replayTime, selectedDate, selectedHex, onSelect,
   className = "max-h-[62vh] w-64",
 }) {
+  const [activityFilter, setActivityFilter] = useState(
+    () => selectedDate === "today" ? "live" : "history"
+  );
   const [kindFilter, setKindFilter] = useState("all");
   // Les longues listes restent fermées au chargement. Ce repli est purement
   // visuel : il ne masque jamais les appareils sur la carte.
@@ -93,14 +96,66 @@ export default function FleetStrips({
     });
   };
   const ctx = { mode, replayTime, liveMap, trails };
-  const planeCount = fleet.filter((a) => a.category !== "dragon").length;
-  const helicopterCount = fleet.filter((a) => a.category === "dragon").length;
+  useEffect(() => {
+    setActivityFilter(selectedDate === "today" ? "live" : "history");
+    setExpandedCats(new Set());
+  }, [selectedDate]);
+
+  const liveAircraft = useMemo(
+    () => fleet.filter((a) => {
+      const live = liveMap[a.hex];
+      return live?.lat != null && (live.seen ?? 99) < 120;
+    }),
+    [fleet, liveMap]
+  );
+  const historicalAircraft = useMemo(
+    () => fleet.filter((a) => (trails[a.hex]?.points?.length ?? 0) > 1),
+    [fleet, trails]
+  );
+  const activityFleet = activityFilter === "live"
+    ? liveAircraft
+    : activityFilter === "history"
+      ? historicalAircraft
+      : fleet;
+  const visibleFleet = activityFleet.filter((a) =>
+    kindFilter === "planes" ? a.category !== "dragon" :
+      kindFilter === "helicopters" ? a.category === "dragon" : true
+  );
+  const planeCount = activityFleet.filter((a) => a.category !== "dragon").length;
+  const helicopterCount = activityFleet.filter((a) => a.category === "dragon").length;
   let previousKind = null;
   return (
     <div className={`pointer-events-auto flex flex-col overflow-y-auto overscroll-contain rounded-md border border-line bg-panel backdrop-blur-md ${className}`}>
-      <nav className="sticky top-0 z-20 grid grid-cols-3 border-b border-line bg-surface/95 p-1" aria-label="Type d’appareil">
+      <nav className="sticky top-0 z-30 grid grid-cols-3 border-b border-line bg-surface/95 p-1" aria-label="Période d’activité">
         {[
-          ["all", "Tous", fleet.length],
+          ["live", "En direct", liveAircraft.length],
+          ["history", "Historique", historicalAircraft.length],
+          ["registry", "Registre", fleet.length],
+        ].map(([value, label, count]) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => {
+              setActivityFilter(value);
+              setExpandedCats(new Set());
+            }}
+            aria-pressed={activityFilter === value}
+            title={
+              value === "live" ? "Appareils émettant une position depuis moins de 2 minutes" :
+                value === "history" ? "Appareils avec une trace sur la journée sélectionnée" :
+                  "Tous les appareils connus du registre"
+            }
+            className={`min-h-10 rounded px-1 font-display text-[11px] font-bold tracking-wide transition-colors focus-visible:outline-2 focus-visible:outline-ink ${
+              activityFilter === value ? "bg-raise text-ink" : "text-ink-faint hover:text-ink"
+            }`}
+          >
+            {label} <span className="tnum text-[10px] opacity-70">{count}</span>
+          </button>
+        ))}
+      </nav>
+      <nav className="sticky top-[49px] z-20 grid grid-cols-3 border-b border-line bg-surface/95 p-1" aria-label="Type d’appareil">
+        {[
+          ["all", "Tous", activityFleet.length],
           ["planes", "Avions", planeCount],
           ["helicopters", "Hélicos", helicopterCount],
         ].map(([value, label, count]) => (
@@ -120,7 +175,7 @@ export default function FleetStrips({
       {GROUPS.map((g) => {
         if (kindFilter === "planes" && g.kind !== "AVIONS") return null;
         if (kindFilter === "helicopters" && g.kind !== "HÉLICOPTÈRES") return null;
-        const members = fleet.filter((a) => a.category === g.category);
+        const members = visibleFleet.filter((a) => a.category === g.category);
         if (!members.length) return null;
         const expanded = expandedCats.has(g.category);
         const statuses = members.map((a) => [a, stripStatus(a, ctx)]);
@@ -157,6 +212,27 @@ export default function FleetStrips({
           </section>
         );
       })}
+      {visibleFleet.length === 0 && (
+        <div className="px-4 py-8 text-center">
+          <p className="font-display text-sm font-semibold text-ink-dim">
+            Aucun appareil {activityFilter === "live" ? "en direct" : "dans cette vue"}
+          </p>
+          {activityFilter === "live" && (
+            <button
+              type="button"
+              onClick={() => setActivityFilter("history")}
+              className="mt-2 min-h-10 text-xs font-semibold text-ink-faint underline decoration-line underline-offset-4 hover:text-ink"
+            >
+              Voir l’historique de la journée
+            </button>
+          )}
+        </div>
+      )}
+      {activityFilter === "registry" && (
+        <p className="border-t border-line px-3 py-2 text-[10px] leading-relaxed text-ink-faint">
+          Registre connu + auto-détection des renforts et Dragon en émission. La couverture ADS-B peut rester incomplète.
+        </p>
+      )}
     </div>
   );
 }

@@ -388,6 +388,7 @@ export default function App() {
             trails={trails}
             mode={mode}
             replayTime={replayTime ?? 0}
+            selectedDate={selectedDate}
             selectedHex={selectedHex}
             onSelect={(hex) => setSelectedHex((h) => (h === hex ? null : hex))}
           />
@@ -410,6 +411,7 @@ export default function App() {
             trails={trails}
             mode={mode}
             replayTime={replayTime ?? 0}
+            selectedDate={selectedDate}
             selectedHex={selectedHex}
             onSelect={(hex) => {
               setSelectedHex((h) => (h === hex ? null : hex));

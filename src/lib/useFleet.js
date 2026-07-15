@@ -18,17 +18,24 @@ const AT8T_EVERY_N_TICKS = 5; // Air Tractors : 1 tick sur 5 (ils changent peu)
 const TRACE_REFRESH_MS = 10 * 60_000; // resync complet des traces du jour
 
 const BOMBER_TYPES = new Set(["CL4T", "CL2T", "DH8D", "AT8T"]);
+const DRAGON_TYPES = new Set(["EC45", "H145"]);
+
+function isDragonLive(ac) {
+  return DRAGON_TYPES.has(ac.type) && /^DRAG(?:ON|O)/i.test(ac.callsign ?? "");
+}
 
 function discoveredMeta(ac) {
+  const dragon = isDragonLive(ac);
   const family =
+    dragon ? "Dragon" :
     ac.type === "DH8D" ? "Milan" :
     ac.type === "AT8T" ? "Air Tractor" : "Pélican";
   return {
     hex: ac.hex,
     reg: ac.reg ?? "?",
     type: ac.type,
-    model: family === "Air Tractor" ? "Air Tractor AT-802" : family,
-    category: ac.type === "DH8D" ? "dash" : ac.type === "AT8T" ? "airtractor" : "canadair",
+    model: dragon ? "Airbus H145 / EC145" : family === "Air Tractor" ? "Air Tractor AT-802" : family,
+    category: dragon ? "dragon" : ac.type === "DH8D" ? "dash" : ac.type === "AT8T" ? "airtractor" : "canadair",
     family,
     callsign_prefix: null,
     discovered: true,
@@ -112,7 +119,8 @@ export function useFleet() {
         const relevant = mil.filter(
           (ac) =>
             hexSet.has(ac.hex) ||
-            (BOMBER_TYPES.has(ac.type) && (ac.reg ?? "").startsWith("F-Z"))
+            (BOMBER_TYPES.has(ac.type) && (ac.reg ?? "").startsWith("F-Z")) ||
+            isDragonLive(ac)
         );
         if (tick % AT8T_EVERY_N_TICKS === 0) {
           extrasCache = { list: await fetchLiveEuroBombers(), at: Date.now() };
