@@ -1,7 +1,7 @@
 // Carte MapLibre + deck.gl : trails animés (TripsLayer), positions (IconLayer),
 // callsigns (TextLayer), hotspots incendies (ScatterplotLayer).
 
-import { useEffect, useMemo, useRef } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import { MapboxOverlay } from "@deck.gl/mapbox";
@@ -9,13 +9,25 @@ import { TripsLayer } from "@deck.gl/geo-layers";
 import { IconLayer, ScatterplotLayer, TextLayer } from "@deck.gl/layers";
 import { positionAt } from "../lib/replay";
 import {
-  colorFor, FIRE_COLOR, FRANCE_VIEW, INK, MAP_STYLE, NIMES_GARONS, SATELLITE_STYLE,
+  aircraftKind, colorFor, FIRE_COLOR, FRANCE_VIEW, INK, MAP_STYLE, NIMES_GARONS, SATELLITE_STYLE,
 } from "../theme";
 
 // Glyphe avion vu de dessus, nez vers le nord (recoloré via mask)
 const PLANE_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path fill="#fff" d="M32 3 L36.5 20 L60 30.5 L60 36.5 L36.5 31.5 L35 48 L45 56.5 L45 61 L32 56.5 L19 61 L19 56.5 L29 48 L27.5 31.5 L4 36.5 L4 30.5 L27.5 20 Z"/></svg>`;
 const PLANE_ICON = {
   url: "data:image/svg+xml;charset=utf-8," + encodeURIComponent(PLANE_SVG),
+  width: 64,
+  height: 64,
+  anchorX: 32,
+  anchorY: 32,
+  mask: true,
+};
+
+// Silhouette volontairement très différente de l'avion : grand rotor transversal,
+// petit rotor de queue et fuselage compact. La catégorie reste lisible sans couleur.
+const HELICOPTER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path fill="#fff" d="M30 5h4v17c7 1 12 6 13 13l10 4v5H45c-2 7-7 11-13 11s-11-4-13-11H7v-5l10-4c1-7 6-12 13-13V5Z"/><path fill="#fff" d="M4 14h56v4H4zM30 51h4v10h-4z"/></svg>`;
+const HELICOPTER_ICON = {
+  url: "data:image/svg+xml;charset=utf-8," + encodeURIComponent(HELICOPTER_SVG),
   width: 64,
   height: 64,
   anchorX: 32,
@@ -43,15 +55,28 @@ export default function MapView({
   const mapRef = useRef(null);
   const overlayRef = useRef(null);
   const satRef = useRef(false);
+  const [mapError, setMapError] = useState(null);
 
   // --- Init MapLibre (une seule fois) ---
   useEffect(() => {
-    const map = new maplibregl.Map({
-      container: containerRef.current,
-      style: MAP_STYLE,
-      center: [FRANCE_VIEW.longitude, FRANCE_VIEW.latitude],
-      zoom: FRANCE_VIEW.zoom,
-      attributionControl: { compact: true },
+    let map;
+    try {
+      map = new maplibregl.Map({
+        container: containerRef.current,
+        style: MAP_STYLE,
+        center: [FRANCE_VIEW.longitude, FRANCE_VIEW.latitude],
+        zoom: FRANCE_VIEW.zoom,
+        attributionControl: { compact: true },
+      });
+    } catch (error) {
+      console.warn("Carte indisponible :", error);
+      setMapError("La carte 3D n’est pas disponible sur ce navigateur.");
+      return;
+    }
+    map.on("error", (event) => {
+      if (!map.loaded() && event?.error?.message?.toLowerCase().includes("webgl")) {
+        setMapError("La carte 3D n’est pas disponible sur ce navigateur.");
+      }
     });
     map.addControl(new maplibregl.NavigationControl({ showCompass: false }), "bottom-right");
     // Labels en français : le style CARTO affiche l'anglais par défaut ("BRITTANY",
@@ -72,7 +97,7 @@ export default function MapView({
     mapRef.current = map;
     overlayRef.current = overlay;
     onMapReady?.(map);
-    return () => map.remove();
+    return () => map?.remove();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -236,8 +261,11 @@ export default function MapView({
         id: "aircraft",
         data: positions,
         getPosition: (d) => [d.lon, d.lat],
-        getIcon: () => PLANE_ICON,
-        getSize: (d) => (d.hex === selectedHex ? 34 : 26),
+        getIcon: (d) => aircraftKind(fleetByHex[d.hex]) === "helicopter" ? HELICOPTER_ICON : PLANE_ICON,
+        getSize: (d) => {
+          const base = aircraftKind(fleetByHex[d.hex]) === "helicopter" ? 30 : 26;
+          return d.hex === selectedHex ? base + 8 : base;
+        },
         getAngle: (d) => -(d.track ?? 0),
         getColor: (d) => {
           const c = colorFor(fleetByHex[d.hex]);
@@ -276,5 +304,18 @@ export default function MapView({
 
   // h-full explicite : maplibre-gl.css force position:relative sur ce div (classe
   // maplibregl-map), ce qui neutraliserait un dimensionnement par inset-0
-  return <div ref={containerRef} className="h-full w-full" />;
+  return (
+    <div className="relative h-full w-full bg-surface">
+      <div ref={containerRef} className="h-full w-full" />
+      {mapError && (
+        <div className="absolute inset-0 flex items-center justify-center bg-[radial-gradient(circle_at_center,#16202f_0,#0b1017_68%)] px-8 text-center">
+          <div className="max-w-sm">
+            <div className="font-display text-5xl text-ink-faint" aria-hidden="true">⌖</div>
+            <p className="mt-3 font-display text-xl font-bold uppercase tracking-wide text-ink">Carte indisponible</p>
+            <p className="mt-2 text-sm leading-relaxed text-ink-dim">{mapError} La flotte, les statuts et le replay restent accessibles.</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
 }

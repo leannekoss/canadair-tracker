@@ -14,6 +14,21 @@ export const CATEGORY_HEX = {
   dragon: "#54a83f",
 };
 
+export const AIRCRAFT_KIND = {
+  canadair: "plane",
+  dash: "plane",
+  airtractor: "plane",
+  dragon: "helicopter",
+};
+
+export function aircraftKind(meta) {
+  return AIRCRAFT_KIND[meta?.category] ?? "plane";
+}
+
+export function aircraftKindLabel(meta) {
+  return aircraftKind(meta) === "helicopter" ? "Hélicoptère" : "Avion";
+}
+
 export const FIRE_COLOR = [255, 92, 51]; // #ff5c33 — statut réservé, jamais une série
 export const INK = [237, 232, 220];
 export const SURFACE = "#0b1017";

@@ -4,7 +4,7 @@
 import { useEffect, useState } from "react";
 import { flightSegments, positionAt, trailDistanceKm } from "../lib/replay";
 import { communeName } from "../lib/fires";
-import { CATEGORY_HEX } from "../theme";
+import { aircraftKindLabel, CATEGORY_HEX } from "../theme";
 
 const photoCache = new Map();
 
@@ -106,14 +106,16 @@ export default function AircraftCard({
               {(mode === "live" && live?.callsign) || meta.reg}
             </h3>
             <p className="mt-1 text-xs text-ink-dim">
-              <span style={{ color }} className="font-semibold">■</span> {meta.model} · {meta.reg}
+              <span style={{ color }} className="font-semibold">■</span>{" "}
+              <span className="font-semibold uppercase tracking-wide text-ink">{aircraftKindLabel(meta)}</span>
+              {" · "}{meta.model} · {meta.reg}
               {meta.discovered && " · détecté auto"}
             </p>
           </div>
           <button
             onClick={onClose}
             aria-label="Fermer"
-            className="-mr-1 -mt-1 px-1.5 text-lg leading-none text-ink-faint transition-colors hover:text-ink"
+            className="-mr-2 -mt-2 flex h-11 w-11 items-center justify-center text-2xl leading-none text-ink-faint transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-ink"
           >
             ×
           </button>

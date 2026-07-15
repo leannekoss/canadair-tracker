@@ -193,6 +193,21 @@ export default function App() {
       : Object.values(liveMap).filter(
           (ac) => ac.lat != null && !ac.onGround && fleetByHex[ac.hex]
         ).length;
+  const airborneByKind = useMemo(() => {
+    const current = mode === "replay"
+      ? fleet.filter((a) => {
+          const p = trails[a.hex] && positionAt(trails[a.hex], replayTime ?? 0);
+          return p && !p.onGround;
+        })
+      : fleet.filter((a) => {
+          const ac = liveMap[a.hex];
+          return ac?.lat != null && !ac.onGround;
+        });
+    return {
+      planes: current.filter((a) => a.category !== "dragon").length,
+      helicopters: current.filter((a) => a.category === "dragon").length,
+    };
+  }, [fleet, liveMap, mode, replayTime, trails]);
 
   return (
     <div className="relative h-full w-full overflow-hidden bg-surface">
@@ -224,6 +239,11 @@ export default function App() {
             <span className="tnum font-semibold text-ink md:ml-2">
               {airborne > 0 ? `${airborne} en vol` : "aucun vol en cours"}
             </span>
+            {airborne > 0 && (
+              <span className="tnum ml-2 hidden text-ink-dim sm:inline">
+                ✈ {airborneByKind.planes} · ✣ {airborneByKind.helicopters}
+              </span>
+            )}
             {lastUpdate && mode === "live" && (
               <span className="tnum ml-2 hidden text-ink-faint md:inline">
                 maj {new Date(lastUpdate).toLocaleTimeString("fr-FR")}
@@ -244,7 +264,7 @@ export default function App() {
         {/* mobile : ouvre les panneaux */}
         <button
           onClick={() => setMobilePanel((p) => (p === "fleet" ? null : "fleet"))}
-          className={`shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md md:hidden ${
+          className={`min-h-11 shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md md:hidden ${
             mobilePanel === "fleet" ? "border-ink-dim/60 bg-raise text-ink" : "border-line bg-panel text-ink-dim"
           }`}
         >
@@ -252,7 +272,7 @@ export default function App() {
         </button>
         <button
           onClick={() => setMobilePanel((p) => (p === "news" ? null : "news"))}
-          className={`shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md md:hidden ${
+          className={`min-h-11 shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md md:hidden ${
             mobilePanel === "news" ? "border-ink-dim/60 bg-raise text-ink" : "border-line bg-panel text-ink-dim"
           }`}
         >
@@ -260,7 +280,7 @@ export default function App() {
         </button>
         <button
           onClick={() => setShowFires((v) => !v)}
-          className={`shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md transition-colors md:py-1.5 ${
+          className={`min-h-11 shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md transition-colors md:min-h-0 md:py-1.5 ${
             showFires
               ? "border-fire/50 bg-fire/15 text-ink"
               : "border-line bg-panel text-ink-faint hover:text-ink"
@@ -391,7 +411,7 @@ export default function App() {
 
       {/* Mobile : fiche appareil en bottom sheet au-dessus de la barre temporelle */}
       {!isDesktop && selectedHex && fleetByHex[selectedHex] && (
-        <div className="absolute inset-x-2 bottom-[130px] z-30">
+        <div className="absolute inset-x-2 bottom-[130px] z-30 max-h-[calc(100dvh-242px)] overflow-y-auto overscroll-contain rounded-md">
           <AircraftCard
             meta={fleetByHex[selectedHex]}
             live={liveMap[selectedHex]}

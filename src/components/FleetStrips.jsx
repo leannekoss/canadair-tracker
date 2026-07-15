@@ -1,14 +1,15 @@
 // Panneau flotte façon « flight progress strips » du contrôle aérien.
 // Un strip par appareil, groupés par famille, statut temps réel ou à l'instant du replay.
 
+import { useState } from "react";
 import { positionAt } from "../lib/replay";
-import { CATEGORY_HEX } from "../theme";
+import { aircraftKindLabel, CATEGORY_HEX } from "../theme";
 
 const GROUPS = [
-  { category: "canadair", title: "Pélican · CL-415" },
-  { category: "dash", title: "Milan · Dash 8 MR" },
-  { category: "airtractor", title: "Air Tractor" },
-  { category: "dragon", title: "Dragon · EC145" },
+  { category: "canadair", title: "Pélican · CL-415", kind: "AVIONS" },
+  { category: "dash", title: "Milan · Dash 8 MR", kind: "AVIONS" },
+  { category: "airtractor", title: "Air Tractor", kind: "AVIONS" },
+  { category: "dragon", title: "Dragon · EC145", kind: "HÉLICOPTÈRES" },
 ];
 
 function fmtTime(t) {
@@ -45,7 +46,8 @@ function Strip({ a, status, selected, onSelect }) {
     <button
       onClick={() => onSelect(a.hex)}
       style={{ borderLeftColor: color }}
-      className={`group flex w-full items-baseline gap-2 border-l-[3px] px-2.5 py-1.5 text-left transition-colors ${
+      aria-label={`Ouvrir ${aircraftKindLabel(a).toLowerCase()} ${status.callsign || a.reg}`}
+      className={`group flex min-h-11 w-full items-center gap-2 border-l-[3px] px-3 py-2 text-left transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink ${
         selected ? "bg-raise" : "hover:bg-raise/60"
       } ${active ? "" : "opacity-55"}`}
     >
@@ -78,22 +80,55 @@ export default function FleetStrips({
   fleet, liveMap, trails, mode, replayTime, selectedHex, onSelect,
   hiddenCats, onToggleCategory, className = "max-h-[62vh] w-64",
 }) {
+  const [kindFilter, setKindFilter] = useState("all");
   const ctx = { mode, replayTime, liveMap, trails };
+  const planeCount = fleet.filter((a) => a.category !== "dragon").length;
+  const helicopterCount = fleet.filter((a) => a.category === "dragon").length;
+  let previousKind = null;
   return (
-    <div className={`pointer-events-auto flex flex-col overflow-y-auto rounded-md border border-line bg-panel backdrop-blur-md ${className}`}>
+    <div className={`pointer-events-auto flex flex-col overflow-y-auto overscroll-contain rounded-md border border-line bg-panel backdrop-blur-md ${className}`}>
+      <nav className="sticky top-0 z-20 grid grid-cols-3 border-b border-line bg-surface/95 p-1" aria-label="Type d’appareil">
+        {[
+          ["all", "Tous", fleet.length],
+          ["planes", "Avions", planeCount],
+          ["helicopters", "Hélicos", helicopterCount],
+        ].map(([value, label, count]) => (
+          <button
+            key={value}
+            type="button"
+            onClick={() => setKindFilter(value)}
+            aria-pressed={kindFilter === value}
+            className={`min-h-10 rounded px-2 font-display text-xs font-bold tracking-wide transition-colors focus-visible:outline-2 focus-visible:outline-ink ${
+              kindFilter === value ? "bg-raise text-ink" : "text-ink-faint hover:text-ink"
+            }`}
+          >
+            {label} <span className="tnum text-[10px] opacity-70">{count}</span>
+          </button>
+        ))}
+      </nav>
       {GROUPS.map((g) => {
+        if (kindFilter === "planes" && g.kind !== "AVIONS") return null;
+        if (kindFilter === "helicopters" && g.kind !== "HÉLICOPTÈRES") return null;
         const members = fleet.filter((a) => a.category === g.category);
         if (!members.length) return null;
         const hidden = hiddenCats?.has(g.category);
         const statuses = members.map((a) => [a, stripStatus(a, ctx)]);
         const airborne = statuses.filter(([, s]) => s.flying).length;
+        const showKind = previousKind !== g.kind;
+        previousKind = g.kind;
         return (
           <section key={g.category}>
+            {showKind && (
+              <div className="sticky top-0 z-10 flex items-center gap-2 border-b border-line bg-surface/95 px-3 py-2 font-display text-[10px] font-bold tracking-[0.18em] text-ink">
+                <span aria-hidden="true">{g.kind === "HÉLICOPTÈRES" ? "✣" : "✈"}</span>
+                {g.kind}
+              </div>
+            )}
             {/* cliquer l'en-tête replie le groupe ET masque la famille sur la carte */}
             <button
               onClick={() => onToggleCategory?.(g.category)}
               title={hidden ? "Afficher sur la carte" : "Masquer sur la carte"}
-              className={`sticky top-0 flex w-full items-baseline justify-between border-b border-line bg-panel-solid px-2.5 pb-1 pt-2 text-left ${hidden ? "opacity-50" : ""}`}
+              className={`flex min-h-10 w-full items-center justify-between border-b border-line bg-panel-solid px-3 py-2 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink ${hidden ? "opacity-50" : ""}`}
             >
               <h2 className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-dim">
                 <span className="mr-1 inline-block w-2 text-ink-faint">{hidden ? "▸" : "▾"}</span>
