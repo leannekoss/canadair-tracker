@@ -18,9 +18,17 @@ export default function NewsFeed({
   className = "w-72",
   listClassName = "max-h-[38vh]",
   defaultOpen = false,
+  open: controlledOpen,
+  onOpenChange,
 }) {
   const [items, setItems] = useState([]);
-  const [open, setOpen] = useState(defaultOpen);
+  const [localOpen, setLocalOpen] = useState(defaultOpen);
+  const open = controlledOpen ?? localOpen;
+  const setOpen = (next) => {
+    const value = typeof next === "function" ? next(open) : next;
+    if (controlledOpen == null) setLocalOpen(value);
+    onOpenChange?.(value);
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -42,6 +50,8 @@ export default function NewsFeed({
       <button
         onClick={() => setOpen((v) => !v)}
         aria-expanded={open}
+        aria-keyshortcuts="a"
+        title={`${open ? "Replier" : "Afficher"} les actualités (A)`}
         className="flex min-h-11 w-full items-center justify-between px-3 py-2 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink"
       >
         <h2 className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-dim">

@@ -118,6 +118,8 @@ export default function DayRecap({
         </button>
         <button
           onClick={onClose}
+          aria-keyshortcuts="Escape"
+          title="Fermer (Échap)"
           className="rounded-md border border-line bg-panel px-3 py-2 font-display text-sm font-semibold text-ink-dim hover:text-ink"
         >
           Fermer

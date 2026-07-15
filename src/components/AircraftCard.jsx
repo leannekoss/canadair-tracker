@@ -115,6 +115,8 @@ export default function AircraftCard({
           <button
             onClick={onClose}
             aria-label="Fermer"
+            aria-keyshortcuts="Escape"
+            title="Fermer (Échap)"
             className="-mr-2 -mt-2 flex h-11 w-11 items-center justify-center text-2xl leading-none text-ink-faint transition-colors hover:text-ink focus-visible:outline-2 focus-visible:outline-ink"
           >
             ×

@@ -45,6 +45,7 @@ export default function App() {
   const [selectedHex, setSelectedHex] = useState(null);
   const [showFires, setShowFires] = useState(true);
   const [showFleet, setShowFleet] = useState(true); // desktop
+  const [showNews, setShowNews] = useState(false); // desktop
   const [mobilePanel, setMobilePanel] = useState(null); // mobile : 'fleet' | 'news' | null
   const [foyers, setFoyers] = useState([]);
   const [satellite, setSatellite] = useState(false);
@@ -177,6 +178,41 @@ export default function App() {
     setPlaying(false);
   }, []);
 
+  // Raccourcis globaux — ignorés dans les contrôles de saisie pour ne jamais
+  // interférer avec le sélecteur de date, le slider ou d'autres formulaires.
+  useEffect(() => {
+    const onKeyDown = (event) => {
+      const target = event.target;
+      const editing = target instanceof HTMLElement && (
+        target.isContentEditable || ["INPUT", "SELECT", "TEXTAREA"].includes(target.tagName)
+      );
+      if (event.repeat || event.metaKey || event.ctrlKey || event.altKey || editing) return;
+
+      const key = event.key.toLowerCase();
+      if (key === "escape") {
+        if (showRecap) setShowRecap(false);
+        else if (selectedHex) setSelectedHex(null);
+        else if (mobilePanel) setMobilePanel(null);
+        else if (showNews) setShowNews(false);
+        return;
+      }
+      if (key === "f") {
+        event.preventDefault();
+        if (isDesktop) setShowFleet((value) => !value);
+        else setMobilePanel((panel) => (panel === "fleet" ? null : "fleet"));
+      } else if (key === "a") {
+        event.preventDefault();
+        if (isDesktop) setShowNews((value) => !value);
+        else setMobilePanel((panel) => (panel === "news" ? null : "news"));
+      } else if (key === "b") {
+        event.preventDefault();
+        setShowRecap((value) => !value);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isDesktop, mobilePanel, selectedHex, showNews, showRecap]);
+
   const airborne =
     mode === "replay"
       ? Object.values(trails).filter((tr) => {
@@ -257,6 +293,8 @@ export default function App() {
         {/* mobile : ouvre les panneaux */}
         <button
           onClick={() => setMobilePanel((p) => (p === "fleet" ? null : "fleet"))}
+          title="Flotte (F)"
+          aria-keyshortcuts="f"
           className={`min-h-11 shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md md:hidden ${
             mobilePanel === "fleet" ? "border-ink-dim/60 bg-raise text-ink" : "border-line bg-panel text-ink-dim"
           }`}
@@ -265,6 +303,8 @@ export default function App() {
         </button>
         <button
           onClick={() => setMobilePanel((p) => (p === "news" ? null : "news"))}
+          title="Actualités (A)"
+          aria-keyshortcuts="a"
           className={`min-h-11 shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md md:hidden ${
             mobilePanel === "news" ? "border-ink-dim/60 bg-raise text-ink" : "border-line bg-panel text-ink-dim"
           }`}
@@ -321,6 +361,8 @@ export default function App() {
         </button>
         <button
           onClick={() => setShowRecap(true)}
+          title="Bilan de la journée sélectionnée (B)"
+          aria-keyshortcuts="b"
           className="shrink-0 rounded-md border border-line bg-panel px-3 py-2 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink md:py-1.5"
         >
           {selectedDate === "today"
@@ -352,7 +394,8 @@ export default function App() {
         )}
         <button
           onClick={() => setShowFleet((v) => !v)}
-          title={showFleet ? "Replier la flotte" : "Afficher la flotte"}
+          title={`${showFleet ? "Replier" : "Afficher"} la flotte (F)`}
+          aria-keyshortcuts="f"
           className="rounded-md border border-line bg-panel px-1.5 py-2 font-display text-xs font-bold text-ink-faint backdrop-blur-md transition-colors hover:text-ink"
         >
           {showFleet ? "‹" : "flotte ›"}
@@ -396,7 +439,7 @@ export default function App() {
             onClose={() => setSelectedHex(null)}
           />
         )}
-        <NewsFeed />
+        <NewsFeed open={showNews} onOpenChange={setShowNews} />
       </div>
       )}
 
@@ -419,6 +462,9 @@ export default function App() {
 
       {/* Footer : sources & auteur (desktop — sur mobile : chip ⓘ) */}
       <footer className="absolute bottom-4 left-4 hidden flex-col gap-0.5 text-[11px] md:flex">
+        <span className="mb-1 text-ink-faint/70">
+          F flotte · A actus · B bilan · Échap fermer
+        </span>
         <a
           href="/methodo.html"
           className="pointer-events-auto text-ink-faint transition-colors hover:text-ink"
