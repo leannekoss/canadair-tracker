@@ -23,9 +23,17 @@ const PLANE_ICON = {
   mask: true,
 };
 
-// Silhouette volontairement très différente de l'avion : grand rotor transversal,
-// petit rotor de queue et fuselage compact. La catégorie reste lisible sans couleur.
-const HELICOPTER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64"><path fill="#fff" d="M30 5h4v17c7 1 12 6 13 13l10 4v5H45c-2 7-7 11-13 11s-11-4-13-11H7v-5l10-4c1-7 6-12 13-13V5Z"/><path fill="#fff" d="M4 14h56v4H4zM30 51h4v10h-4z"/></svg>`;
+// Silhouette latérale : cabine, patins, longue poutre de queue et rotor arrière.
+// À 34 px cette lecture est bien plus immédiate qu'une vue de dessus abstraite.
+const HELICOPTER_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64">
+  <g fill="#fff">
+    <rect x="3" y="10" width="43" height="3" rx="1.5"/>
+    <rect x="23" y="11" width="3" height="9" rx="1.5"/>
+    <path d="M7 31c0-8.2 6.8-13 17.5-13 9.2 0 15 4.2 17.2 10.7L57 24v5l-14.3 5.2C41 41.7 34.6 46 24.5 46 13.7 46 7 40.6 7 31Z"/>
+    <path d="M19 44h3v7h-3zM34 43h3v8h-3zM14 50h29v3H14z"/>
+    <path d="M54 17h3v15h-3zM49 23h13v3H49z"/>
+  </g>
+</svg>`;
 const HELICOPTER_ICON = {
   url: "data:image/svg+xml;charset=utf-8," + encodeURIComponent(HELICOPTER_SVG),
   width: 64,
@@ -263,7 +271,7 @@ export default function MapView({
         getPosition: (d) => [d.lon, d.lat],
         getIcon: (d) => aircraftKind(fleetByHex[d.hex]) === "helicopter" ? HELICOPTER_ICON : PLANE_ICON,
         getSize: (d) => {
-          const base = aircraftKind(fleetByHex[d.hex]) === "helicopter" ? 30 : 26;
+          const base = aircraftKind(fleetByHex[d.hex]) === "helicopter" ? 34 : 26;
           return d.hex === selectedHex ? base + 8 : base;
         },
         getAngle: (d) => -(d.track ?? 0),
@@ -287,7 +295,7 @@ export default function MapView({
           d.callsign || fleetByHex[d.hex]?.reg || d.hex.toUpperCase(),
         getSize: 12,
         getColor: [...INK, 235],
-        getPixelOffset: [0, 24],
+        getPixelOffset: (d) => [0, aircraftKind(fleetByHex[d.hex]) === "helicopter" ? 30 : 24],
         fontFamily: "Barlow Condensed, sans-serif",
         fontWeight: 600,
         fontSettings: { sdf: true },
