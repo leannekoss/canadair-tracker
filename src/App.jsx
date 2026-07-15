@@ -66,10 +66,14 @@ export default function App() {
     return trail ? analyzeMission(trail, foyers) : null;
   }, [selectedHex, trails, foyers]);
 
-  // Bilan de la journée (calculé seulement quand le poster est ouvert)
+  // Les hotspots VIIRS chargés sont ceux d'aujourd'hui. Ne jamais les appliquer
+  // rétroactivement à une archive : on garderait les bons vols mais de faux feux.
+  const recapFoyers = selectedDate === "today" ? foyers : [];
+
+  // Bilan de la journée sélectionnée (calculé seulement quand le poster est ouvert)
   const recap = useMemo(
-    () => (showRecap ? buildRecap(trails, fleetByHex, foyers) : null),
-    [showRecap, trails, fleetByHex, foyers]
+    () => (showRecap ? buildRecap(trails, fleetByHex, recapFoyers) : null),
+    [showRecap, trails, fleetByHex, recapFoyers]
   );
   const dateLabel = useMemo(() => {
     const d = selectedDate === "today" ? new Date() : new Date(selectedDate + "T12:00:00Z");
@@ -293,7 +297,7 @@ export default function App() {
             </option>
             {foyers.map((f, i) => (
               <option key={i} value={i}>
-                {f.active ? "🔥" : "🌫"} {f.name} · {f.frp.toLocaleString("fr-FR")} MW
+                {f.active ? "🔥" : "🌫"} {f.name} · {f.frp.toLocaleString("fr-FR")} MW FRP
                 {f.active ? "" : " · en extinction"}
               </option>
             ))}
@@ -319,7 +323,9 @@ export default function App() {
           onClick={() => setShowRecap(true)}
           className="shrink-0 rounded-md border border-line bg-panel px-3 py-2 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink md:py-1.5"
         >
-          Bilan du jour
+          {selectedDate === "today"
+            ? "Bilan du jour"
+            : `Bilan du ${new Date(selectedDate + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}`}
         </button>
         <a
           href="/methodo.html"
@@ -435,9 +441,10 @@ export default function App() {
           recap={recap}
           trails={trails}
           fleetByHex={fleetByHex}
-          foyers={foyers}
+          foyers={recapFoyers}
           dateLabel={dateLabel}
           isToday={selectedDate === "today"}
+          hasHistoricalFires={selectedDate === "today"}
           onClose={() => setShowRecap(false)}
         />
       )}

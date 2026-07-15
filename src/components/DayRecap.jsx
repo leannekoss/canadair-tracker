@@ -64,7 +64,9 @@ function TrailMap({ trails, fleetByHex, foyers }) {
   );
 }
 
-export default function DayRecap({ recap, trails, fleetByHex, foyers, dateLabel, isToday, onClose }) {
+export default function DayRecap({
+  recap, trails, fleetByHex, foyers, dateLabel, isToday, hasHistoricalFires, onClose,
+}) {
   const posterRef = useRef(null);
   const [exporting, setExporting] = useState(false);
   const [scale, setScale] = useState(1);
@@ -136,7 +138,7 @@ export default function DayRecap({ recap, trails, fleetByHex, foyers, dateLabel,
                   Canadair Tracker
                 </div>
                 <h1 className="font-display text-[38px] font-bold leading-none tracking-wide text-ink">
-                  Bilan {isToday ? "en cours" : "du jour"}
+                  Bilan {isToday ? "en cours" : "de la journée"}
                 </h1>
               </div>
               <div className="text-right font-display text-lg font-semibold text-ink-dim">{dateLabel}</div>
@@ -158,7 +160,7 @@ export default function DayRecap({ recap, trails, fleetByHex, foyers, dateLabel,
                 <div className="mt-6">
                   <TrailMap trails={trails} fleetByHex={fleetByHex} foyers={foyers} />
                   <p className="mt-1 text-right text-[10px] text-ink-faint">
-                    Trajets ADS-B de la journée · foyers VIIRS
+                    Trajets ADS-B de la journée{hasHistoricalFires ? " · foyers VIIRS" : ""}
                   </p>
                 </div>
 
@@ -174,7 +176,11 @@ export default function DayRecap({ recap, trails, fleetByHex, foyers, dateLabel,
                           <span className="font-display font-bold text-ink">{a.reg}</span>
                           <span className="tnum ml-auto text-ink-dim">
                             {a.distKm.toLocaleString("fr-FR")} km
-                            {a.rotations > 0 && <span className="text-ink-faint"> · {a.rotations} rot.</span>}
+                            {a.rotations > 0 && (
+                              <span className="text-ink-faint">
+                                {" · "}{a.rotations} rotation{a.rotations > 1 ? "s" : ""} estimée{a.rotations > 1 ? "s" : ""}
+                              </span>
+                            )}
                           </span>
                         </li>
                       ))}
@@ -192,11 +198,16 @@ export default function DayRecap({ recap, trails, fleetByHex, foyers, dateLabel,
                           <li key={i} className="flex items-baseline gap-2 text-[13px]">
                             <span className="text-fire">●</span>
                             <span className="text-ink">{f.name}</span>
-                            <span className="tnum ml-auto text-ink-dim">{f.frp.toLocaleString("fr-FR")} MW</span>
+                            <span className="tnum ml-auto text-ink-dim">{f.frp.toLocaleString("fr-FR")} MW FRP</span>
                           </li>
                         ))}
-                      {recap.foyersHit.length === 0 && (
+                      {recap.foyersHit.length === 0 && hasHistoricalFires && (
                         <li className="text-[13px] text-ink-faint">Aucun passage sur foyer détecté</li>
+                      )}
+                      {!hasHistoricalFires && (
+                        <li className="text-[13px] leading-snug text-ink-faint">
+                          Données satellite des foyers non archivées pour cette date
+                        </li>
                       )}
                     </ul>
                   </section>
@@ -213,13 +224,19 @@ export default function DayRecap({ recap, trails, fleetByHex, foyers, dateLabel,
                     </div>
                   ))}
                 </div>
+
+                {hasHistoricalFires && (
+                  <p className="mt-3 text-[10px] leading-relaxed text-ink-faint">
+                    MW FRP = puissance radiative du feu observée par satellite (intensité thermique estimée). Une rotation estimée correspond à un passage de l’appareil dans la zone du foyer ; ce n’est pas une confirmation opérationnelle de largage.
+                  </p>
+                )}
               </>
             )}
 
             <footer className="mt-auto flex items-baseline justify-between border-t border-line pt-3">
               <span className="font-display text-sm font-semibold text-ink-dim">canadair-tracker.vercel.app</span>
               <span className="text-[11px] text-ink-faint">
-                Estimations ADS-B / VIIRS · par Henri Casalis
+                Estimations ADS-B{hasHistoricalFires ? " / VIIRS" : ""} · par Henri Casalis
               </span>
             </footer>
           </article>

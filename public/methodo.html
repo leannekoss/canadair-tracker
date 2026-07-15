@@ -91,7 +91,11 @@
       <li><strong>Détections thermiques</strong> : satellites VIIRS (NASA FIRMS), servies par
         l'ArcGIS Living Atlas, sans clé. Un point = un pixel chaud ~375 m, pas un périmètre officiel.</li>
       <li><strong>Foyers</strong> : regroupement des détections par cellules d'environ 15 km,
-        nommés par leur commune (geo.api.gouv.fr), triés par puissance radiative (FRP, en MW).
+        nommés par leur commune (geo.api.gouv.fr), triés par puissance radiative du feu
+        (FRP, en MW). La FRP mesure l’intensité thermique observée par satellite : ce n’est
+        ni une surface brûlée, ni une puissance électrique. Les « rotations » affichées sont
+        des passages estimés dans la zone d’un foyer à partir des traces ADS-B, pas une
+        confirmation opérationnelle de largage.
         Foyer « actif » = détection &lt; 24 h · « en extinction » = détection entre 24 h et 72 h.</li>
     </ul>
     <div class="warn">
