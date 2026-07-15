@@ -14,11 +14,16 @@ function relTime(date) {
   return date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 }
 
-export default function NewsFeed({ className = "w-72", listClassName = "max-h-[38vh]" }) {
+export default function NewsFeed({
+  className = "w-72",
+  listClassName = "max-h-[38vh]",
+  defaultOpen = false,
+}) {
   const [items, setItems] = useState([]);
-  const [open, setOpen] = useState(true);
+  const [open, setOpen] = useState(defaultOpen);
 
   useEffect(() => {
+    if (!open) return;
     let alive = true;
     const load = () =>
       fetchNews()
@@ -30,19 +35,20 @@ export default function NewsFeed({ className = "w-72", listClassName = "max-h-[3
       alive = false;
       clearInterval(id);
     };
-  }, []);
+  }, [open]);
 
   return (
     <aside className={`pointer-events-auto flex flex-col overflow-hidden rounded-md border border-line bg-panel backdrop-blur-md ${className}`}>
       <button
         onClick={() => setOpen((v) => !v)}
-        className="flex w-full items-baseline justify-between px-3 pb-1.5 pt-2 text-left"
+        aria-expanded={open}
+        className="flex min-h-11 w-full items-center justify-between px-3 py-2 text-left focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-ink"
       >
         <h2 className="font-display text-[11px] font-semibold uppercase tracking-[0.14em] text-ink-dim">
           <span className="pulse-dot mr-1.5 inline-block h-1.5 w-1.5 rounded-full bg-fire align-middle" />
           Actus incendies
         </h2>
-        <span className="font-display text-xs font-bold text-ink-faint">{open ? "‹" : "›"}</span>
+        <span className="font-display text-xs font-bold text-ink-faint">{open ? "▾" : "▸"}</span>
       </button>
       {open && items.length === 0 && (
         <p className="border-t border-line px-3 py-3 text-[12px] text-ink-faint">

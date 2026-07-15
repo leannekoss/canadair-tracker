@@ -372,7 +372,7 @@ export default function App() {
       )}
       {!isDesktop && mobilePanel === "news" && (
         <div className="absolute inset-x-2 bottom-[130px] top-[104px] z-20">
-          <NewsFeed className="h-full w-full" listClassName="max-h-none flex-1" />
+          <NewsFeed className="h-full w-full" listClassName="max-h-none flex-1" defaultOpen />
         </div>
       )}
 
