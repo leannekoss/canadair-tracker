@@ -5,6 +5,7 @@ import FleetStrips from "./components/FleetStrips.jsx";
 import AircraftCard from "./components/AircraftCard.jsx";
 import NewsFeed from "./components/NewsFeed.jsx";
 import DayRecap from "./components/DayRecap.jsx";
+import Legend from "./components/Legend.jsx";
 import { useFleet } from "./lib/useFleet.js";
 import { positionAt, timeWindow } from "./lib/replay.js";
 import { ACTIVE_AGE_HOURS, fetchFires, namedFireClusters } from "./lib/fires.js";
@@ -313,6 +314,7 @@ export default function App() {
         </button>
         <button
           onClick={() => setShowFires((v) => !v)}
+          title="Détections satellite VIIRS des 72 dernières heures, zone France élargie"
           className={`min-h-11 shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md transition-colors md:min-h-0 md:py-1.5 ${
             showFires
               ? "border-fire/50 bg-fire/15 text-ink"
@@ -320,6 +322,9 @@ export default function App() {
           }`}
         >
           ● Feux{fires.length ? ` ${fires.length}` : ""}
+          <span className="ml-1 hidden font-normal text-ink-dim sm:inline">
+            · zone France
+          </span>
         </button>
         {/* Foyers actifs détectés (clusters VIIRS triés par puissance) */}
         {foyers.length > 0 && (
@@ -482,6 +487,18 @@ export default function App() {
           par Henri Casalis
         </a>
       </footer>
+
+      {/* Légende / clé de lecture — dépliée en bas à gauche (desktop),
+          repliée sous les chips (mobile) où l'espace est compté */}
+      {isDesktop ? (
+        <div className="absolute bottom-[76px] left-4 z-20">
+          <Legend fleet={fleet} defaultOpen />
+        </div>
+      ) : (
+        <div className="absolute left-2 top-[150px] z-20">
+          <Legend fleet={fleet} defaultOpen={false} />
+        </div>
+      )}
 
       {/* Bilan de la journée (poster exportable) */}
       {showRecap && (

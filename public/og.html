@@ -1,0 +1,65 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/fonts/fonts.css" />
+    <style>
+      /* Gabarit 1200x630 pour l'image de partage (og:image). Reproductible :
+         capturer cette page à un viewport 1200x630 et enregistrer public/og.jpg. */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1200px; height: 630px; overflow: hidden; background: #0b1017; }
+      .card {
+        position: relative; width: 1200px; height: 630px;
+        font-family: "Barlow", sans-serif; color: #ede8dc;
+      }
+      .bg {
+        position: absolute; inset: 0; width: 100%; height: 100%;
+        object-fit: cover; object-position: 42% 55%;
+      }
+      /* Dégradé bas-gauche pour asseoir le titre sans masquer la carte */
+      .scrim {
+        position: absolute; inset: 0;
+        background:
+          linear-gradient(105deg, rgba(11,16,23,0.92) 0%, rgba(11,16,23,0.62) 34%, rgba(11,16,23,0) 62%),
+          linear-gradient(0deg, rgba(11,16,23,0.85) 0%, rgba(11,16,23,0) 30%);
+      }
+      .content { position: absolute; left: 64px; bottom: 62px; right: 64px; }
+      .kicker {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 26px; letter-spacing: 3px; text-transform: uppercase;
+        color: #ff5c33; font-weight: 600; margin-bottom: 10px;
+      }
+      h1 {
+        font-family: "Barlow Condensed", sans-serif;
+        font-size: 82px; font-weight: 700; line-height: 0.98; letter-spacing: 1px;
+      }
+      p.sub { font-size: 28px; color: #94a1b5; margin-top: 16px; max-width: 720px; }
+      .legend { display: flex; gap: 26px; margin-top: 26px; font-size: 22px; align-items: center; }
+      .lg { display: flex; align-items: center; gap: 9px; color: #cdd5e0; }
+      .dot { width: 15px; height: 15px; border-radius: 50%; display: inline-block; }
+      .url {
+        position: absolute; right: 64px; bottom: 66px; text-align: right;
+        font-family: "Barlow Condensed", sans-serif; font-size: 26px;
+        letter-spacing: 1px; color: #ede8dc; font-weight: 600;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <img class="bg" src="/og-bg.jpeg" alt="" />
+      <div class="scrim"></div>
+      <div class="content">
+        <div class="kicker">Sécurité Civile · en direct</div>
+        <h1>CANADAIR TRACKER</h1>
+        <p class="sub">Où sont les bombardiers d'eau, et sur quels feux ils interviennent.</p>
+        <div class="legend">
+          <span class="lg"><span class="dot" style="background:#d63426"></span>Pélican</span>
+          <span class="lg"><span class="dot" style="background:#b8880f"></span>Milan</span>
+          <span class="lg"><span class="dot" style="background:#3f8ed0"></span>Air Tractor</span>
+          <span class="lg"><span class="dot" style="background:#ff5c33"></span>Feux</span>
+        </div>
+      </div>
+      <div class="url">canadair-tracker.vercel.app</div>
+    </div>
+  </body>
+</html>
