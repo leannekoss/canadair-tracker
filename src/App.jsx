@@ -322,7 +322,7 @@ export default function App() {
       )}
 
       {/* Contrôles : rangée scrollable sous le header (mobile) / haut-droite (desktop) */}
-      <div className="no-scrollbar absolute left-2 right-2 top-[52px] flex gap-1.5 overflow-x-auto pb-1 md:left-auto md:right-4 md:top-4 md:max-w-[calc(100vw-230px)] md:gap-2 md:pb-0">
+      <div className="no-scrollbar absolute left-2 right-2 top-[52px] flex gap-1.5 overflow-x-auto pb-1 md:left-auto md:right-4 md:top-4 md:max-w-[calc(100vw-230px)] md:flex-wrap md:justify-end md:gap-2 md:overflow-visible md:pb-0">
         {/* mobile : ouvre les panneaux */}
         <button
           onClick={() => setMobilePanel((p) => (p === "fleet" ? null : "fleet"))}
@@ -479,7 +479,7 @@ export default function App() {
 
       {/* Desktop : fiche appareil + fil d'actus en colonne droite */}
       {isDesktop && (
-      <div className="absolute right-4 top-16 flex flex-col items-end gap-2">
+      <div className="absolute right-4 top-16 flex flex-col items-end gap-2 md:top-28 lg:top-16">
         {selectedFoyer && (
           <FoyerCard
             foyer={selectedFoyer}
