@@ -83,6 +83,17 @@
       .share:active { transform: translateY(1px); }
       .share-status { min-height: 16px; margin-top: 6px; text-align: center; font-size: 13px; color: var(--ink-dim); }
 
+      /* ---- Personnes vulnérables ---- */
+      .vuln { margin-top: 28px; border: 1px solid var(--line); background: var(--panel);
+        border-radius: 12px; padding: 16px; }
+      .vuln p { margin-top: 8px; font-size: 14.5px; color: var(--ink-dim); }
+      .vuln p strong { color: var(--ink); }
+      .vuln-call { display: flex; align-items: center; justify-content: center;
+        min-height: 52px; margin-top: 12px; border: 1px solid var(--line); border-radius: 10px;
+        background: var(--raise); color: var(--ink); text-decoration: none;
+        font-family: var(--disp); font-weight: 700; font-size: 17px; }
+      .vuln-call:active { transform: translateY(1px); }
+
       /* ---- À emporter ---- */
       .kit { margin-top: 22px; }
       .kit h2 { font-family: var(--disp); font-size: 20px; font-weight: 700; letter-spacing: .4px; }
@@ -175,6 +186,18 @@
           <li>🧥 Vêtement couvrant (fumée)</li>
           <li>🐾 Animaux en cage / laisse</li>
         </ul>
+      </section>
+
+      <!-- PERSONNES VULNÉRABLES -->
+      <section class="vuln">
+        <h2 class="sec">Personne vulnérable&nbsp;?</h2>
+        <p>
+          Personne âgée, à mobilité réduite, malade ou isolée&nbsp;:
+          <strong>signalez-le tôt à la mairie</strong> pour une prise en charge adaptée
+          (transport assis, couché ou PMR). Les personnes vulnérables sont évacuées
+          <strong>en priorité</strong> ; quand c'est possible, par la route plutôt que par bateau.
+        </p>
+        <a class="vuln-call" href="tel:0556038400">📞 Mairie de Lège-Cap-Ferret · 05 56 03 84 00</a>
       </section>
 
       <!-- CARTE (repère visuel) -->
