@@ -344,6 +344,15 @@ export default function App() {
         >
           Actus
         </button>
+        {/* Accès au plan d'évacuation maritime — mobile (chip dans la rangée qui
+            défile) ; sur desktop il est dans le footer pour ne pas surcharger. */}
+        <a
+          href="/evacuation.html"
+          title="Plan d'évacuation maritime (Lège-Cap-Ferret)"
+          className="flex min-h-11 shrink-0 items-center rounded-md border border-fire/50 bg-fire/15 px-3 py-2 font-display text-sm font-semibold tracking-wide text-ink backdrop-blur-md md:hidden"
+        >
+          Évacuation
+        </a>
         <button
           onClick={() => setShowFires((v) => !v)}
           title="Détections satellite VIIRS des 72 dernières heures, zone France élargie"
@@ -535,6 +544,12 @@ export default function App() {
 
       {/* Footer : sources & auteur (desktop — sur mobile : chip ⓘ) */}
       <footer className="absolute bottom-4 left-4 hidden flex-col gap-0.5 text-[11px] md:flex">
+        <a
+          href="/evacuation.html"
+          className="pointer-events-auto mb-1 inline-flex w-fit items-center gap-1.5 rounded-md border border-fire/50 bg-fire/15 px-2 py-1 font-display text-xs font-semibold tracking-wide text-ink backdrop-blur-md transition-colors hover:bg-fire/25"
+        >
+          ● Plan d'évacuation maritime →
+        </a>
         <span className="mb-1 text-ink-faint/70">
           F flotte · A actus · B bilan · S saison · Échap fermer
         </span>
