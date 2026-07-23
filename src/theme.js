@@ -75,6 +75,7 @@ export const SATELLITE_STYLE = {
 
 export const FRANCE_VIEW = { longitude: 2.6, latitude: 46.6, zoom: 5.4 };
 export const FONTAINEBLEAU_VIEW = { longitude: 2.7, latitude: 48.42, zoom: 10.2 };
+export const CAP_FERRET_VIEW = { longitude: -1.2, latitude: 44.67, zoom: 11 };
 export const NIMES_GARONS = { longitude: 4.4165, latitude: 43.7574 }; // base avions Sécurité Civile
 
 export function colorFor(meta) {

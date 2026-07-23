@@ -37,6 +37,10 @@
       .wrap { max-width: 720px; margin: 0 auto; padding: 0 16px 64px; }
       a { color: inherit; }
 
+      .crumb { padding: 14px 2px 12px; font-size: 13px; color: var(--ink-faint); }
+      .crumb a { color: var(--ink-dim); text-decoration: none; }
+      .crumb a:hover { color: var(--ink); }
+      .crumb .sep { margin: 0 7px; }
       .hero { position: relative; margin: 0 -16px 0; }
       .hero img { display: block; width: 100%; height: auto; }
       .hero-cap { padding: 14px 16px 0; }
@@ -93,6 +97,11 @@
   </head>
   <body>
     <div class="wrap">
+      <nav class="crumb" aria-label="fil d'Ariane">
+        <a href="/?evac=1">Canadair Tracker</a>
+        <span class="sep">›</span>
+        <span aria-current="page">Évacuation maritime</span>
+      </nav>
       <div class="hero">
         <img src="/evacuation-og.jpg" alt="Carte du Bassin d'Arcachon avec les points d'embarquement et d'accueil du plan d'évacuation maritime" />
       </div>

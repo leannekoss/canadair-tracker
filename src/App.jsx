@@ -9,12 +9,13 @@ import Legend from "./components/Legend.jsx";
 import EffortBar from "./components/EffortBar.jsx";
 import FoyerCard from "./components/FoyerCard.jsx";
 import SeasonPanel from "./components/SeasonPanel.jsx";
+import { EvacCard } from "./components/EvacInfo.jsx";
 import { useFleet } from "./lib/useFleet.js";
 import { positionAt, timeWindow } from "./lib/replay.js";
 import { ACTIVE_AGE_HOURS, fetchFires, namedFireClusters } from "./lib/fires.js";
 import { analyzeMission, foyerPasses } from "./lib/mission.js";
 import { buildRecap } from "./lib/recap.js";
-import { FRANCE_VIEW } from "./theme.js";
+import { FRANCE_VIEW, CAP_FERRET_VIEW } from "./theme.js";
 
 const REPLAY_TICK_MS = 50;
 const FIRES_REFRESH_MS = 15 * 60_000;
@@ -56,6 +57,11 @@ export default function App() {
   const [satellite, setSatellite] = useState(false);
   const [showRecap, setShowRecap] = useState(false);
   const [showSeason, setShowSeason] = useState(false);
+  const [evacPoints, setEvacPoints] = useState([]);
+  const [showEvac, setShowEvac] = useState(
+    () => new URLSearchParams(window.location.search).get("evac") === "1"
+  );
+  const [selectedEvac, setSelectedEvac] = useState(null);
   const [fires, setFires] = useState([]);
   const [, setClockTick] = useState(0); // re-render 1s : horloge + avance du fade live
   const mapRef = useRef(null);
@@ -177,6 +183,30 @@ export default function App() {
     });
   }, []);
 
+  // Points du plan d'évacuation maritime (chargés une fois).
+  useEffect(() => {
+    fetch("/evacuation-points.json")
+      .then((r) => r.json())
+      .then((d) => setEvacPoints(d.points ?? []))
+      .catch(() => {});
+  }, []);
+
+  // Activer la couche évacuation : afficher les points et cadrer sur le Cap-Ferret.
+  const toggleEvac = useCallback(() => {
+    setShowEvac((on) => {
+      const next = !on;
+      if (next) flyTo(CAP_FERRET_VIEW);
+      else setSelectedEvac(null);
+      return next;
+    });
+  }, [flyTo]);
+
+  // Deep-link ?evac=1 : cadrer sur le Cap-Ferret au chargement.
+  useEffect(() => {
+    if (showEvac) flyTo(CAP_FERRET_VIEW);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const handleScrub = useCallback((t) => {
     setMode("replay");
     setReplayTime(t);
@@ -215,6 +245,7 @@ export default function App() {
       if (key === "escape") {
         if (showSeason) setShowSeason(false);
         else if (showRecap) setShowRecap(false);
+        else if (selectedEvac) setSelectedEvac(null);
         else if (selectedFoyer) setSelectedFoyer(null);
         else if (selectedHex) setSelectedHex(null);
         else if (mobilePanel) setMobilePanel(null);
@@ -239,7 +270,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isDesktop, mobilePanel, selectedHex, selectedFoyer, showNews, showRecap, showSeason]);
+  }, [isDesktop, mobilePanel, selectedHex, selectedFoyer, selectedEvac, showNews, showRecap, showSeason]);
 
   const airborne =
     mode === "replay"
@@ -283,6 +314,9 @@ export default function App() {
         selectedHex={selectedHex}
         onSelect={setSelectedHex}
         onMapReady={(m) => (mapRef.current = m)}
+        evacPoints={evacPoints}
+        showEvac={showEvac}
+        onEvacSelect={setSelectedEvac}
       />
 
       {/* Header — identité + état du dispositif (compact sur mobile) */}
@@ -344,15 +378,17 @@ export default function App() {
         >
           Actus
         </button>
-        {/* Accès au plan d'évacuation maritime — mobile (chip dans la rangée qui
-            défile) ; sur desktop il est dans le footer pour ne pas surcharger. */}
-        <a
-          href="/evacuation.html"
-          title="Plan d'évacuation maritime (Lège-Cap-Ferret)"
-          className="flex min-h-11 shrink-0 items-center rounded-md border border-fire/50 bg-fire/15 px-3 py-2 font-display text-sm font-semibold tracking-wide text-ink backdrop-blur-md md:hidden"
+        {/* Couche « évacuation maritime » — mobile (chip dans la rangée qui défile) ;
+            sur desktop l'entrée est dans le footer pour ne pas surcharger. */}
+        <button
+          onClick={toggleEvac}
+          title="Points du plan d'évacuation maritime (Lège-Cap-Ferret)"
+          className={`min-h-11 shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md md:hidden ${
+            showEvac ? "border-fire bg-fire/25 text-ink" : "border-fire/50 bg-fire/15 text-ink"
+          }`}
         >
           Évacuation
-        </a>
+        </button>
         <button
           onClick={() => setShowFires((v) => !v)}
           title="Détections satellite VIIRS des 72 dernières heures, zone France élargie"
@@ -490,6 +526,13 @@ export default function App() {
       {/* Desktop : fiche appareil + fil d'actus en colonne droite */}
       {isDesktop && (
       <div className="absolute right-4 top-16 flex flex-col items-end gap-2 md:top-28 lg:top-16">
+        {selectedEvac && (
+          <EvacCard
+            point={selectedEvac}
+            onClose={() => setSelectedEvac(null)}
+            className="w-72"
+          />
+        )}
         {selectedFoyer && (
           <FoyerCard
             foyer={selectedFoyer}
@@ -511,6 +554,13 @@ export default function App() {
         )}
         <NewsFeed open={showNews} onOpenChange={setShowNews} />
       </div>
+      )}
+
+      {/* Mobile : fiche point d'évacuation en bottom sheet */}
+      {!isDesktop && selectedEvac && (
+        <div className="absolute inset-x-2 bottom-[130px] z-30 max-h-[calc(100dvh-242px)] overflow-y-auto overscroll-contain rounded-md">
+          <EvacCard point={selectedEvac} onClose={() => setSelectedEvac(null)} className="w-full" />
+        </div>
       )}
 
       {/* Mobile : fiche foyer en bottom sheet */}
@@ -544,12 +594,14 @@ export default function App() {
 
       {/* Footer : sources & auteur (desktop — sur mobile : chip ⓘ) */}
       <footer className="absolute bottom-4 left-4 hidden flex-col gap-0.5 text-[11px] md:flex">
-        <a
-          href="/evacuation.html"
-          className="pointer-events-auto mb-1 inline-flex w-fit items-center gap-1.5 rounded-md border border-fire/50 bg-fire/15 px-2 py-1 font-display text-xs font-semibold tracking-wide text-ink backdrop-blur-md transition-colors hover:bg-fire/25"
+        <button
+          onClick={toggleEvac}
+          className={`pointer-events-auto mb-1 inline-flex w-fit items-center gap-1.5 rounded-md border px-2 py-1 font-display text-xs font-semibold tracking-wide text-ink backdrop-blur-md transition-colors hover:bg-fire/25 ${
+            showEvac ? "border-fire bg-fire/25" : "border-fire/50 bg-fire/15"
+          }`}
         >
-          ● Plan d'évacuation maritime →
-        </a>
+          ● Évacuation maritime {showEvac ? "· masquer" : "· afficher"}
+        </button>
         <span className="mb-1 text-ink-faint/70">
           F flotte · A actus · B bilan · S saison · Échap fermer
         </span>
@@ -573,11 +625,11 @@ export default function App() {
           repliée sous les chips (mobile) où l'espace est compté */}
       {isDesktop ? (
         <div className="absolute bottom-[76px] left-4 z-20">
-          <Legend fleet={fleet} defaultOpen />
+          <Legend fleet={fleet} defaultOpen showEvac={showEvac} />
         </div>
       ) : (
         <div className="absolute left-2 top-[150px] z-20">
-          <Legend fleet={fleet} defaultOpen={false} />
+          <Legend fleet={fleet} defaultOpen={false} showEvac={showEvac} />
         </div>
       )}
 

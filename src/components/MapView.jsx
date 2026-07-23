@@ -58,6 +58,9 @@ export default function MapView({
   selectedHex,
   onSelect,
   onMapReady,
+  evacPoints = [],
+  showEvac,
+  onEvacSelect,
 }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
@@ -305,10 +308,48 @@ export default function MapView({
         pickable: true,
         onClick: (info) => info.object && onSelect?.(info.object.hex),
       }),
+      // Couche « évacuation maritime » : points d'embarquement / accueil du plan
+      showEvac &&
+        evacPoints.length > 0 &&
+        new ScatterplotLayer({
+          id: "evac",
+          data: evacPoints,
+          getPosition: (d) => [d.lon, d.lat],
+          getRadius: 260,
+          radiusMinPixels: 7,
+          radiusMaxPixels: 13,
+          getFillColor: (d) =>
+            d.role === "embarquement" ? [214, 52, 38, 255] : [53, 192, 101, 255],
+          stroked: true,
+          getLineColor: [237, 232, 220, 235],
+          getLineWidth: 60,
+          lineWidthMinPixels: 2,
+          pickable: true,
+          onClick: (info) => info.object && onEvacSelect?.(info.object),
+        }),
+      showEvac &&
+        evacPoints.length > 0 &&
+        new TextLayer({
+          id: "evac-labels",
+          data: evacPoints,
+          getPosition: (d) => [d.lon, d.lat],
+          getText: (d) => d.nom,
+          getSize: 11,
+          getColor: [...INK, 235],
+          getPixelOffset: [0, 18],
+          fontFamily: "Barlow Condensed, sans-serif",
+          fontWeight: 600,
+          fontSettings: { sdf: true },
+          outlineWidth: 5,
+          outlineColor: [11, 16, 23, 255],
+          characterSet: "auto",
+          pickable: true,
+          onClick: (info) => info.object && onEvacSelect?.(info.object),
+        }),
     ].filter(Boolean);
 
     overlay.setProps({ layers });
-  }, [fleetByHex, trailList, liveMap, mode, replayTime, t0, fires, showFires, hiddenCats, mission, selectedHex, onSelect]);
+  }, [fleetByHex, trailList, liveMap, mode, replayTime, t0, fires, showFires, hiddenCats, mission, selectedHex, onSelect, evacPoints, showEvac, onEvacSelect]);
 
   // h-full explicite : maplibre-gl.css force position:relative sur ce div (classe
   // maplibregl-map), ce qui neutraliserait un dimensionnement par inset-0

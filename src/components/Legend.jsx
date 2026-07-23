@@ -10,7 +10,7 @@ const FAMILIES = [
   { category: "dragon", label: "Dragon", sub: "EC145" },
 ];
 
-export default function Legend({ fleet, defaultOpen }) {
+export default function Legend({ fleet, defaultOpen, showEvac }) {
   const [open, setOpen] = useState(defaultOpen ?? true);
   const present = new Set((fleet ?? []).map((a) => a.category));
   const rows = FAMILIES.filter((f) => present.has(f.category));
@@ -44,6 +44,27 @@ export default function Legend({ fleet, defaultOpen }) {
             <span className="inline-block h-0.5 w-3.5 shrink-0 rounded-sm bg-ink-dim" />
             <span>Trajectoire des dernières heures</span>
           </div>
+          {showEvac && (
+            <>
+              <div className="mt-1 border-t border-line pt-1.5 font-display text-[10px] font-semibold uppercase tracking-wide text-ink-faint">
+                Évacuation maritime
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: "#d63426" }} />
+                <span>Point d'embarquement</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="inline-block h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: "#35c065" }} />
+                <span>Point d'accueil</span>
+              </div>
+              <a
+                href="/evacuation.html"
+                className="text-[12px] font-semibold text-fire underline-offset-2 hover:underline"
+              >
+                Plan complet & numéros →
+              </a>
+            </>
+          )}
         </div>
       )}
     </div>
