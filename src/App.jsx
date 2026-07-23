@@ -292,7 +292,7 @@ export default function App() {
             CANADAIR TRACKER
           </h1>
           <p className="min-w-0 flex-1 truncate text-[11px] text-ink-dim md:mt-1 md:text-xs">
-            <span className="hidden md:inline">Bombardiers d'eau · Sécurité Civile</span>
+            <span className="hidden lg:inline">Bombardiers d'eau · Sécurité Civile</span>
             <span className="tnum font-semibold text-ink md:ml-2">
               {airborne > 0 ? `${airborne} en vol` : "aucun vol en cours"}
             </span>
@@ -302,13 +302,14 @@ export default function App() {
               </span>
             )}
             {lastUpdate && mode === "live" && (
-              <span className="tnum ml-2 hidden text-ink-faint md:inline">
+              <span className="tnum ml-2 hidden text-ink-faint lg:inline">
                 maj {new Date(lastUpdate).toLocaleTimeString("fr-FR")}
               </span>
             )}
           </p>
-          {/* Effort du jour : desktop seulement (le header mobile reste mono-ligne) */}
-          <div className="hidden md:block">
+          {/* Effort du jour : grands écrans seulement (sous lg, le header reste
+              compact pour laisser la place à la rangée de contrôles à droite) */}
+          <div className="hidden lg:block">
             <EffortBar recap={recap} />
           </div>
         </div>
@@ -321,7 +322,7 @@ export default function App() {
       )}
 
       {/* Contrôles : rangée scrollable sous le header (mobile) / haut-droite (desktop) */}
-      <div className="no-scrollbar absolute left-2 right-2 top-[52px] flex gap-1.5 overflow-x-auto pb-1 md:left-auto md:right-4 md:top-4 md:max-w-[calc(100vw-360px)] md:flex-wrap md:justify-end md:gap-2 md:overflow-visible md:pb-0">
+      <div className="no-scrollbar absolute left-2 right-2 top-[52px] flex gap-1.5 overflow-x-auto pb-1 md:left-auto md:right-4 md:top-4 md:max-w-[calc(100vw-230px)] md:gap-2 md:pb-0">
         {/* mobile : ouvre les panneaux */}
         <button
           onClick={() => setMobilePanel((p) => (p === "fleet" ? null : "fleet"))}
@@ -353,7 +354,7 @@ export default function App() {
           }`}
         >
           ● Feux{fires.length ? ` ${fires.length}` : ""}
-          <span className="ml-1 hidden font-normal text-ink-dim sm:inline">
+          <span className="ml-1 hidden font-normal text-ink-dim lg:inline">
             · zone France
           </span>
         </button>
@@ -404,9 +405,11 @@ export default function App() {
           aria-keyshortcuts="b"
           className="shrink-0 rounded-md border border-line bg-panel px-3 py-2 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink md:py-1.5"
         >
-          {selectedDate === "today"
-            ? "Bilan du jour"
-            : `Bilan du ${new Date(selectedDate + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}`}
+          {selectedDate === "today" ? (
+            <>Bilan<span className="hidden lg:inline"> du jour</span></>
+          ) : (
+            `Bilan du ${new Date(selectedDate + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}`
+          )}
         </button>
         <button
           onClick={() => setShowSeason(true)}
