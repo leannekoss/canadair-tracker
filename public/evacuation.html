@@ -73,6 +73,16 @@
       .go .official strong { color: var(--ink); }
       .go .official a { color: var(--ink); text-decoration: underline; text-underline-offset: 2px; }
 
+      /* ---- Partager ---- */
+      .share { display: flex; align-items: center; justify-content: center; gap: 8px;
+        width: 100%; min-height: 54px; margin-top: 12px; cursor: pointer;
+        border: 1px solid color-mix(in srgb, var(--fire) 55%, transparent);
+        background: color-mix(in srgb, var(--fire) 12%, transparent); color: var(--ink);
+        border-radius: 12px; font-family: var(--disp); font-weight: 700; font-size: 18px;
+        letter-spacing: .3px; }
+      .share:active { transform: translateY(1px); }
+      .share-status { min-height: 16px; margin-top: 6px; text-align: center; font-size: 13px; color: var(--ink-dim); }
+
       /* ---- À emporter ---- */
       .kit { margin-top: 22px; }
       .kit h2 { font-family: var(--disp); font-size: 20px; font-weight: 700; letter-spacing: .4px; }
@@ -149,6 +159,10 @@
           qui fait seul foi.
         </p>
       </div>
+
+      <!-- PARTAGER : prévenir ses proches / voisins -->
+      <button id="share" class="share">📤 Partager à mes proches</button>
+      <div id="share-status" class="share-status" role="status"></div>
 
       <!-- À EMPORTER -->
       <section class="kit">
@@ -244,6 +258,28 @@
       document.getElementById("nums").innerHTML = NUMS
         .map((n) => `<a href="tel:${n.num.replace(/\s/g, "")}"><span class="lbl">${n.label}</span><span class="n">${n.num}</span></a>`)
         .join("");
+
+      // Partage : ouvre le partage natif du téléphone (WhatsApp, SMS…) ; repli
+      // copie-du-lien sur les navigateurs sans Web Share (desktop).
+      document.getElementById("share").addEventListener("click", async () => {
+        const status = document.getElementById("share-status");
+        const url = window.location.href.split("#")[0];
+        const data = {
+          title: "Évacuation maritime — Lège-Cap-Ferret",
+          text: "Évacuation par la mer (Lège-Cap-Ferret) : le point d'embarquement le plus proche, les numéros d'urgence et le plan officiel.",
+          url,
+        };
+        if (navigator.share) {
+          try { await navigator.share(data); } catch (e) { /* annulé */ }
+          return;
+        }
+        try {
+          await navigator.clipboard.writeText(url);
+          status.textContent = "Lien copié — collez-le dans WhatsApp, SMS…";
+        } catch (e) {
+          status.textContent = url;
+        }
+      });
 
       // Point d'embarquement le plus proche → itinéraire immédiat.
       const EMB = POINTS.filter((p) => p.role === "embarquement");
