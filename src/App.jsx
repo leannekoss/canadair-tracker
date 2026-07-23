@@ -6,10 +6,12 @@ import AircraftCard from "./components/AircraftCard.jsx";
 import NewsFeed from "./components/NewsFeed.jsx";
 import DayRecap from "./components/DayRecap.jsx";
 import Legend from "./components/Legend.jsx";
+import EffortBar from "./components/EffortBar.jsx";
+import FoyerCard from "./components/FoyerCard.jsx";
 import { useFleet } from "./lib/useFleet.js";
 import { positionAt, timeWindow } from "./lib/replay.js";
 import { ACTIVE_AGE_HOURS, fetchFires, namedFireClusters } from "./lib/fires.js";
-import { analyzeMission } from "./lib/mission.js";
+import { analyzeMission, foyerPasses } from "./lib/mission.js";
 import { buildRecap } from "./lib/recap.js";
 import { FRANCE_VIEW } from "./theme.js";
 
@@ -44,6 +46,7 @@ export default function App() {
   const [playing, setPlaying] = useState(false);
   const [speed, setSpeed] = useState(60);
   const [selectedHex, setSelectedHex] = useState(null);
+  const [selectedFoyer, setSelectedFoyer] = useState(null);
   const [showFires, setShowFires] = useState(true);
   const [showFleet, setShowFleet] = useState(true); // desktop
   const [showNews, setShowNews] = useState(false); // desktop
@@ -68,14 +71,31 @@ export default function App() {
     return trail ? analyzeMission(trail, foyers) : null;
   }, [selectedHex, trails, foyers]);
 
+  // Appareils passés sur le foyer sélectionné aujourd'hui (estimation ADS-B).
+  const foyerPassesByAircraft = useMemo(() => {
+    if (!selectedFoyer) return [];
+    const rows = [];
+    for (const hex of Object.keys(trails)) {
+      const meta = fleetByHex[hex];
+      if (!meta) continue;
+      const hits = foyerPasses(trails[hex], [selectedFoyer]);
+      if (hits[0]?.passes > 0) {
+        rows.push({ reg: meta.reg, family: meta.family, category: meta.category, passes: hits[0].passes });
+      }
+    }
+    return rows.sort((a, b) => b.passes - a.passes);
+  }, [selectedFoyer, trails, fleetByHex]);
+
   // Les hotspots VIIRS chargés sont ceux d'aujourd'hui. Ne jamais les appliquer
   // rétroactivement à une archive : on garderait les bons vols mais de faux feux.
   const recapFoyers = selectedDate === "today" ? foyers : [];
 
-  // Bilan de la journée sélectionnée (calculé seulement quand le poster est ouvert)
+  // Bilan de la journée sélectionnée : calculé en continu (bandeau d'effort +
+  // poster). Un seul calcul partagé — le coût O(points × foyers) n'est payé
+  // qu'une fois par changement de trails/foyers, pas deux.
   const recap = useMemo(
-    () => (showRecap ? buildRecap(trails, fleetByHex, recapFoyers) : null),
-    [showRecap, trails, fleetByHex, recapFoyers]
+    () => buildRecap(trails, fleetByHex, recapFoyers),
+    [trails, fleetByHex, recapFoyers]
   );
   const dateLabel = useMemo(() => {
     const d = selectedDate === "today" ? new Date() : new Date(selectedDate + "T12:00:00Z");
@@ -192,6 +212,7 @@ export default function App() {
       const key = event.key.toLowerCase();
       if (key === "escape") {
         if (showRecap) setShowRecap(false);
+        else if (selectedFoyer) setSelectedFoyer(null);
         else if (selectedHex) setSelectedHex(null);
         else if (mobilePanel) setMobilePanel(null);
         else if (showNews) setShowNews(false);
@@ -212,7 +233,7 @@ export default function App() {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isDesktop, mobilePanel, selectedHex, showNews, showRecap]);
+  }, [isDesktop, mobilePanel, selectedHex, selectedFoyer, showNews, showRecap]);
 
   const airborne =
     mode === "replay"
@@ -280,6 +301,10 @@ export default function App() {
               </span>
             )}
           </p>
+          {/* Effort du jour : desktop seulement (le header mobile reste mono-ligne) */}
+          <div className="hidden md:block">
+            <EffortBar recap={recap} />
+          </div>
         </div>
       </header>
       {/* Bandeau d'erreur : sous la rangée de chips (mobile) / sous le header (desktop) */}
@@ -332,7 +357,10 @@ export default function App() {
             value=""
             onChange={(e) => {
               const f = foyers[Number(e.target.value)];
-              if (f) flyTo({ longitude: f.lon, latitude: f.lat, zoom: 10.2 });
+              if (f) {
+                flyTo({ longitude: f.lon, latitude: f.lat, zoom: 10.2 });
+                setSelectedFoyer(f);
+              }
               e.target.value = "";
             }}
             className="shrink-0 cursor-pointer rounded-md border border-line bg-panel px-2 py-2 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink md:py-1.5"
@@ -435,6 +463,14 @@ export default function App() {
       {/* Desktop : fiche appareil + fil d'actus en colonne droite */}
       {isDesktop && (
       <div className="absolute right-4 top-16 flex flex-col items-end gap-2">
+        {selectedFoyer && (
+          <FoyerCard
+            foyer={selectedFoyer}
+            passes={foyerPassesByAircraft}
+            onClose={() => setSelectedFoyer(null)}
+            className="w-72"
+          />
+        )}
         {selectedHex && fleetByHex[selectedHex] && (
           <AircraftCard
             meta={fleetByHex[selectedHex]}
@@ -448,6 +484,18 @@ export default function App() {
         )}
         <NewsFeed open={showNews} onOpenChange={setShowNews} />
       </div>
+      )}
+
+      {/* Mobile : fiche foyer en bottom sheet */}
+      {!isDesktop && selectedFoyer && (
+        <div className="absolute inset-x-2 bottom-[130px] z-30 max-h-[calc(100dvh-242px)] overflow-y-auto overscroll-contain rounded-md">
+          <FoyerCard
+            foyer={selectedFoyer}
+            passes={foyerPassesByAircraft}
+            onClose={() => setSelectedFoyer(null)}
+            className="w-full"
+          />
+        </div>
       )}
 
       {/* Mobile : fiche appareil en bottom sheet au-dessus de la barre temporelle */}
