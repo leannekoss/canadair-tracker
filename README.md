@@ -8,6 +8,8 @@ l'été 2026, notamment Fontainebleau.
 **Production : https://canadair-tracker.vercel.app** (repo GitHub public
 `leannekoss/canadair-tracker`, deploy auto sur push `main`)
 
+![Canadair Tracker — la carte live avec les bombardiers d'eau et les feux actifs](public/og.jpg)
+
 ## Lancer en local
 
 ```bash
@@ -28,6 +30,15 @@ de Vercel ne matche qu'un segment hors Next.js).
 - Clic sur un appareil (carte ou strip) : fiche avec photo, alt/vitesse/cap,
   distance du jour, rotations
 - **Feux** : hotspots VIIRS < 24 h, taille ∝ intensité (FRP), opacité ∝ fraîcheur
+- **Légende** : clé de lecture des couleurs, toujours visible
+- **Bandeau d'effort** : appareils, km, heures de vol, écopages estimés du jour
+- **Foyers** : sélecteur des feux nommés par commune → fiche avec les appareils
+  passés dessus (estimation ADS-B)
+- **Saison** (`S`) : cumul de toutes les journées archivées (km, journée la plus
+  intense, appareils les plus sollicités)
+
+> La **détection amont** des départs de feu (avant la réponse aérienne suivie ici)
+> relève de projets dédiés comme [kanari.io](https://kanari.io/).
 
 ## Sources de données (gratuites, validées 07/2026)
 

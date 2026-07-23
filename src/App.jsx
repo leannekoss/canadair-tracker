@@ -8,6 +8,7 @@ import DayRecap from "./components/DayRecap.jsx";
 import Legend from "./components/Legend.jsx";
 import EffortBar from "./components/EffortBar.jsx";
 import FoyerCard from "./components/FoyerCard.jsx";
+import SeasonPanel from "./components/SeasonPanel.jsx";
 import { useFleet } from "./lib/useFleet.js";
 import { positionAt, timeWindow } from "./lib/replay.js";
 import { ACTIVE_AGE_HOURS, fetchFires, namedFireClusters } from "./lib/fires.js";
@@ -54,6 +55,7 @@ export default function App() {
   const [foyers, setFoyers] = useState([]);
   const [satellite, setSatellite] = useState(false);
   const [showRecap, setShowRecap] = useState(false);
+  const [showSeason, setShowSeason] = useState(false);
   const [fires, setFires] = useState([]);
   const [, setClockTick] = useState(0); // re-render 1s : horloge + avance du fade live
   const mapRef = useRef(null);
@@ -211,7 +213,8 @@ export default function App() {
 
       const key = event.key.toLowerCase();
       if (key === "escape") {
-        if (showRecap) setShowRecap(false);
+        if (showSeason) setShowSeason(false);
+        else if (showRecap) setShowRecap(false);
         else if (selectedFoyer) setSelectedFoyer(null);
         else if (selectedHex) setSelectedHex(null);
         else if (mobilePanel) setMobilePanel(null);
@@ -229,11 +232,14 @@ export default function App() {
       } else if (key === "b") {
         event.preventDefault();
         setShowRecap((value) => !value);
+      } else if (key === "s") {
+        event.preventDefault();
+        setShowSeason((value) => !value);
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isDesktop, mobilePanel, selectedHex, selectedFoyer, showNews, showRecap]);
+  }, [isDesktop, mobilePanel, selectedHex, selectedFoyer, showNews, showRecap, showSeason]);
 
   const airborne =
     mode === "replay"
@@ -402,6 +408,14 @@ export default function App() {
             ? "Bilan du jour"
             : `Bilan du ${new Date(selectedDate + "T12:00:00Z").toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}`}
         </button>
+        <button
+          onClick={() => setShowSeason(true)}
+          title="Cumul de toutes les journées archivées (S)"
+          aria-keyshortcuts="s"
+          className="shrink-0 rounded-md border border-line bg-panel px-3 py-2 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink md:py-1.5"
+        >
+          Saison
+        </button>
         <a
           href="/methodo.html"
           title="Sources & méthodologie"
@@ -518,7 +532,7 @@ export default function App() {
       {/* Footer : sources & auteur (desktop — sur mobile : chip ⓘ) */}
       <footer className="absolute bottom-4 left-4 hidden flex-col gap-0.5 text-[11px] md:flex">
         <span className="mb-1 text-ink-faint/70">
-          F flotte · A actus · B bilan · Échap fermer
+          F flotte · A actus · B bilan · S saison · Échap fermer
         </span>
         <a
           href="/methodo.html"
@@ -560,6 +574,11 @@ export default function App() {
           hasHistoricalFires={selectedDate === "today"}
           onClose={() => setShowRecap(false)}
         />
+      )}
+
+      {/* Vue saison : cumul des journées archivées */}
+      {showSeason && (
+        <SeasonPanel fleetByHex={fleetByHex} onClose={() => setShowSeason(false)} />
       )}
 
       {/* Barre temporelle */}
