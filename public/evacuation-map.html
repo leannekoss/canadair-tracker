@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" href="/fonts/fonts.css" />
+    <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.css" />
+    <style>
+      /* Gabarit de capture : carte du Bassin d'Arcachon avec les 8 points du plan.
+         Capturer à 1200x630 -> public/evacuation-og.jpg (aperçu WhatsApp). */
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1200px; height: 630px; overflow: hidden; background: #0b1017;
+        font-family: "Barlow", sans-serif; }
+      #map { position: absolute; inset: 0; }
+      .maplibregl-ctrl-attrib, .maplibregl-ctrl-bottom-right { display: none !important; }
+      .pt { width: 16px; height: 16px; border-radius: 50%; border: 2px solid #0b1017;
+        box-shadow: 0 0 0 1px rgba(0,0,0,.4); }
+      .pt.emb { background: #d63426; }
+      .pt.acc { background: #35c065; }
+      .scrim { position: absolute; inset: 0; pointer-events: none;
+        background: linear-gradient(0deg, rgba(11,16,23,.9) 0%, rgba(11,16,23,0) 26%),
+                    linear-gradient(105deg, rgba(11,16,23,.85) 0%, rgba(11,16,23,0) 46%); }
+      .content { position: absolute; left: 54px; bottom: 48px; right: 54px; color: #ede8dc; }
+      .kicker { font-family: "Barlow Condensed", sans-serif; font-size: 24px; letter-spacing: 3px;
+        text-transform: uppercase; color: #ff5c33; font-weight: 600; margin-bottom: 8px; }
+      h1 { font-family: "Barlow Condensed", sans-serif; font-size: 64px; font-weight: 700;
+        line-height: .96; letter-spacing: .5px; }
+      .sub { font-size: 24px; color: #cdd5e0; margin-top: 12px; }
+      .lg { display: flex; gap: 26px; margin-top: 20px; font-size: 21px; align-items: center; }
+      .lg span { display: flex; align-items: center; gap: 9px; color: #cdd5e0; }
+      .dot { width: 14px; height: 14px; border-radius: 50%; }
+    </style>
+  </head>
+  <body>
+    <div id="map"></div>
+    <div class="scrim"></div>
+    <div class="content">
+      <div class="kicker">Plan officiel · Préfecture maritime</div>
+      <h1>ÉVACUATION MARITIME</h1>
+      <div class="sub">Presqu'île de Lège-Cap-Ferret · en cas d'incendie de forêt</div>
+      <div class="lg">
+        <span><span class="dot" style="background:#d63426"></span>Embarquement (presqu'île)</span>
+        <span><span class="dot" style="background:#35c065"></span>Accueil (rive Arcachon)</span>
+      </div>
+    </div>
+    <script src="https://unpkg.com/maplibre-gl@5.24.0/dist/maplibre-gl.js"></script>
+    <script>
+      const PTS = [
+        ["Grand-Piquey","emb",44.7138,-1.2113],["Le Canon","emb",44.6977,-1.2281],
+        ["Port de la Vigne","emb",44.6748,-1.2404],["Jetée Bélisaire","emb",44.6563,-1.2369],
+        ["Jetée du Moulleau","acc",44.6417,-1.2044],["Jetée Thiers","acc",44.6649,-1.1688],
+        ["Jetée Pierre Lataillade","acc",44.6650,-1.1637],["Port d'Arcachon","acc",44.6599,-1.1479],
+      ];
+      const map = new maplibregl.Map({
+        container: "map",
+        style: "https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json",
+        center: [-1.205, 44.672], zoom: 11.4, interactive: false, attributionControl: false,
+      });
+      map.on("load", () => {
+        for (const [name, role, lat, lon] of PTS) {
+          const el = document.createElement("div");
+          el.className = "pt " + role;
+          new maplibregl.Marker({ element: el }).setLngLat([lon, lat]).addTo(map);
+        }
+        window.__ready = true;
+      });
+    </script>
+  </body>
+</html>

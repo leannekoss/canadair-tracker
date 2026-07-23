@@ -1,0 +1,23 @@
+{
+  "plan": "Plan d'évacuation par voie maritime de la presqu'île de Lège-Cap-Ferret en cas d'incendie de forêt",
+  "autorite": "Arrêté interpréfectoral Préfet maritime de l'Atlantique / Préfet de la Gironde",
+  "miseAJour": "2023-07-18",
+  "pdf": "https://www.premar-atlantique.gouv.fr/uploads/atlantique/arretes/bc502352b0a9cd5fee61c18bc5b56575.pdf",
+  "source_coords": "OpenStreetMap / Overpass (embarcadères), croisé le 2026-07-24. Le PDF officiel fait foi.",
+  "points": [
+    { "nom": "Grand-Piquey", "role": "embarquement", "commune": "Lège-Cap-Ferret", "lat": 44.7138, "lon": -1.2113, "note": "cale de mise à l'eau — position indicative" },
+    { "nom": "Le Canon", "role": "embarquement", "commune": "Lège-Cap-Ferret", "lat": 44.6977, "lon": -1.2281 },
+    { "nom": "Port de la Vigne", "role": "embarquement", "commune": "Lège-Cap-Ferret", "lat": 44.6748, "lon": -1.2404 },
+    { "nom": "Jetée Bélisaire", "role": "embarquement", "commune": "Lège-Cap-Ferret", "lat": 44.6563, "lon": -1.2369 },
+    { "nom": "Jetée du Moulleau", "role": "accueil", "commune": "Arcachon", "lat": 44.6417, "lon": -1.2044 },
+    { "nom": "Jetée Thiers", "role": "accueil", "commune": "Arcachon", "lat": 44.6649, "lon": -1.1688 },
+    { "nom": "Jetée Pierre Lataillade", "role": "accueil", "commune": "Arcachon", "lat": 44.6650, "lon": -1.1637, "note": "ex-jetée d'Eyrac" },
+    { "nom": "Port d'Arcachon", "role": "accueil", "commune": "Arcachon", "lat": 44.6599, "lon": -1.1479 }
+  ],
+  "numeros": [
+    { "label": "Urgences (Europe)", "num": "112" },
+    { "label": "Sapeurs-pompiers", "num": "18" },
+    { "label": "Secours en mer (CROSS)", "num": "196" },
+    { "label": "Mairie de Lège-Cap-Ferret", "num": "05 56 03 84 00" }
+  ]
+}
