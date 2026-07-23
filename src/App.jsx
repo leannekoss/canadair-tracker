@@ -191,16 +191,6 @@ export default function App() {
       .catch(() => {});
   }, []);
 
-  // Activer la couche évacuation : afficher les points et cadrer sur le Cap-Ferret.
-  const toggleEvac = useCallback(() => {
-    setShowEvac((on) => {
-      const next = !on;
-      if (next) flyTo(CAP_FERRET_VIEW);
-      else setSelectedEvac(null);
-      return next;
-    });
-  }, [flyTo]);
-
   // Deep-link ?evac=1 : cadrer sur le Cap-Ferret au chargement.
   useEffect(() => {
     if (showEvac) flyTo(CAP_FERRET_VIEW);
@@ -378,17 +368,15 @@ export default function App() {
         >
           Actus
         </button>
-        {/* Couche « évacuation maritime » — mobile (chip dans la rangée qui défile) ;
+        {/* Accès au guide d'évacuation — mobile (chip dans la rangée qui défile) ;
             sur desktop l'entrée est dans le footer pour ne pas surcharger. */}
-        <button
-          onClick={toggleEvac}
-          title="Points du plan d'évacuation maritime (Lège-Cap-Ferret)"
-          className={`min-h-11 shrink-0 rounded-md border px-3 py-2 font-display text-sm font-semibold tracking-wide backdrop-blur-md md:hidden ${
-            showEvac ? "border-fire bg-fire/25 text-ink" : "border-fire/50 bg-fire/15 text-ink"
-          }`}
+        <a
+          href="/evacuation.html"
+          title="Guide d'évacuation maritime (Lège-Cap-Ferret)"
+          className="flex min-h-11 shrink-0 items-center rounded-md border border-fire/50 bg-fire/15 px-3 py-2 font-display text-sm font-semibold tracking-wide text-ink backdrop-blur-md md:hidden"
         >
           Évacuation
-        </button>
+        </a>
         <button
           onClick={() => setShowFires((v) => !v)}
           title="Détections satellite VIIRS des 72 dernières heures, zone France élargie"
@@ -594,14 +582,12 @@ export default function App() {
 
       {/* Footer : sources & auteur (desktop — sur mobile : chip ⓘ) */}
       <footer className="absolute bottom-4 left-4 hidden flex-col gap-0.5 text-[11px] md:flex">
-        <button
-          onClick={toggleEvac}
-          className={`pointer-events-auto mb-1 inline-flex w-fit items-center gap-1.5 rounded-md border px-2 py-1 font-display text-xs font-semibold tracking-wide text-ink backdrop-blur-md transition-colors hover:bg-fire/25 ${
-            showEvac ? "border-fire bg-fire/25" : "border-fire/50 bg-fire/15"
-          }`}
+        <a
+          href="/evacuation.html"
+          className="pointer-events-auto mb-1 inline-flex w-fit items-center gap-1.5 rounded-md border border-fire/50 bg-fire/15 px-2 py-1 font-display text-xs font-semibold tracking-wide text-ink backdrop-blur-md transition-colors hover:bg-fire/25"
         >
-          ● Évacuation maritime {showEvac ? "· masquer" : "· afficher"}
-        </button>
+          ● Guide d'évacuation maritime →
+        </a>
         <span className="mb-1 text-ink-faint/70">
           F flotte · A actus · B bilan · S saison · Échap fermer
         </span>
