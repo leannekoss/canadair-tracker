@@ -363,6 +363,7 @@ export default function App() {
           <select
             value=""
             onChange={(e) => {
+              if (e.target.value === "") return; // placeholder « Foyers (N) »
               const f = foyers[Number(e.target.value)];
               if (f) {
                 flyTo({ longitude: f.lon, latitude: f.lat, zoom: 10.2 });
@@ -372,9 +373,9 @@ export default function App() {
             }}
             className="shrink-0 cursor-pointer rounded-md border border-line bg-panel px-2 py-2 font-display text-sm font-semibold tracking-wide text-ink-dim backdrop-blur-md transition-colors hover:text-ink md:py-1.5"
           >
-            <option value="" disabled>
-              Foyers ({foyers.length})
-            </option>
+            {/* NB : PAS de `disabled` — sur Chrome Android une option
+                disabled+selected s'affiche vide (le select paraît vide). */}
+            <option value="">Foyers ({foyers.length})</option>
             {foyers.map((f, i) => (
               <option key={i} value={i}>
                 {f.active ? "🔥" : "🌫"} {f.name} · {f.frp.toLocaleString("fr-FR")} MW FRP
