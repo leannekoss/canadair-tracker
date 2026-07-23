@@ -321,7 +321,7 @@ export default function App() {
       )}
 
       {/* Contrôles : rangée scrollable sous le header (mobile) / haut-droite (desktop) */}
-      <div className="no-scrollbar absolute left-2 right-2 top-[52px] flex gap-1.5 overflow-x-auto pb-1 md:left-auto md:right-4 md:top-4 md:overflow-visible md:pb-0">
+      <div className="no-scrollbar absolute left-2 right-2 top-[52px] flex gap-1.5 overflow-x-auto pb-1 md:left-auto md:right-4 md:top-4 md:max-w-[calc(100vw-360px)] md:flex-wrap md:justify-end md:gap-2 md:overflow-visible md:pb-0">
         {/* mobile : ouvre les panneaux */}
         <button
           onClick={() => setMobilePanel((p) => (p === "fleet" ? null : "fleet"))}
